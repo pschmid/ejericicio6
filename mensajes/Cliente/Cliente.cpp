@@ -1,12 +1,13 @@
 #include "Cliente.h"
 
 Cliente :: Cliente ( char* archivo,char letra ) {
-	this->cola = new Cola<mensaje> ( archivo,letra );
+	this->colaEnvios = new Cola<mensaje> ( archivo,letra );
+	this->colaRecibos = new Cola<mensaje> ( Util().itoa(getpid()).c_str(),letra );
 }
 
 Cliente :: ~Cliente() {
-	this->cola->destruir ();
-	delete this->cola;
+	this->colaEnvios->destruir ();
+	delete this->colaEnvios;
 }
 
 mensaje Cliente :: recibirEntrada(){
@@ -110,8 +111,8 @@ mensaje Cliente :: enviarPeticion ( mensaje peticion ) {
 	mensaje respuesta;
 
 
-	this->cola->escribir ( peticion );
-	this->cola->leer ( RESPUESTA,&respuesta );
+	this->colaEnvios->escribir ( peticion );
+	this->colaEnvios->leer ( RESPUESTA,&respuesta );
 
 	return respuesta;
 }

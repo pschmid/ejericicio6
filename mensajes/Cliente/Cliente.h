@@ -5,21 +5,21 @@
 #include <iostream>
 #include <string>
 #include <sstream>
+#include "../Common/Mensajes.h"
+#include "../Common/Cola.h"
+#include "../Common/Util.h"
+#include "../Common/Constants.h"
 
 using namespace std;
-
-#include "Mensajes.h"
-#include "Cola.h"
-#include "Common/Util.h"
-#include "Common/Constants.h"
 
 class Cliente {
 
 	private:
-		Cola<mensaje>* cola;
+		Cola<mensaje>* colaEnvios;
+		Cola<mensaje>* colaRecibos;
 
 	public:
-		Cliente ( char* archivo,char letra );
+		Cliente (char* archivo,char letra );
 		virtual ~Cliente();
 		mensaje enviarPeticion ( mensaje);
 		mensaje recibirEntrada();
