@@ -3,11 +3,22 @@
 Cliente :: Cliente ( char* archivo,char letra ) {
 	this->colaEnvios = new Cola<mensaje> ( archivo,letra );
 	this->colaRecibos = new Cola<mensaje> ( Util().itoa(getpid()).c_str(),letra );
+	this->iniciarComunicacion();
 }
 
 Cliente :: ~Cliente() {
 	this->colaEnvios->destruir ();
+	this->colaRecibos->destruir();
 	delete this->colaEnvios;
+	delete this->colaRecibos;
+}
+
+void Cliente::iniciarComunicacion(){
+	mensaje peticion;
+	peticion.mtype = IDENTIFICACION;
+	peticion.id = getpid();
+	this->colaEnvios->escribir ( peticion );
+
 }
 
 mensaje Cliente :: recibirEntrada(){
@@ -110,9 +121,8 @@ mensaje Cliente :: enviarPeticion ( mensaje peticion ) {
 
 	mensaje respuesta;
 
-
 	this->colaEnvios->escribir ( peticion );
-	this->colaEnvios->leer ( RESPUESTA,&respuesta );
+	this->colaRecibos->leer ( RESPUESTA,&respuesta );
 
 	return respuesta;
 }

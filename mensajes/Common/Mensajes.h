@@ -1,6 +1,6 @@
 #ifndef MENSAJES_H_
 #define MENSAJES_H_
-
+#define IDENTIFICACION 0
 #define	INSERTAR	1
 #define CONSULTAR	2
 #define	RESPUESTA	3

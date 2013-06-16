@@ -24,6 +24,7 @@ class Cliente {
 		mensaje enviarPeticion ( mensaje);
 		mensaje recibirEntrada();
 		mensaje armarHeader(long ,vector<string>);
+		void iniciarComunicacion();
 };
 
 #endif /* CLIENTE_H_ */

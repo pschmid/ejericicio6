@@ -42,7 +42,7 @@ int main(int argc, char* argv[] ) {
 //	bool debug = opParser.optionExists("-d", "--debug");
 
 	// servidor que escucha inserciones a la base.
-	Servidor servidor ( (char *) "main2.cc",'a' );
+	Servidor servidor ( (char *) COLA_SERVIDOR,'a' );
 	servidor.iniciar();
 //	vector<mensaje> datos;
 	wait(NULL);

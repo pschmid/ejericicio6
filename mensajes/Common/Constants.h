@@ -1,3 +1,8 @@
+#define COLA_SERVIDOR "servidor"
+
+
+
+
 #define NUM_JUGADORES_MAX 10
 #define CARTAS_PARTIDA 4
 #define SEPARADOR ' '

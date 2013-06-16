@@ -42,7 +42,7 @@ int main(int argc, char* argv[] ) {
 //	bool debug = opParser.optionExists("-d", "--debug");
 
 	// cliente
-	Cliente cliente ( (char *) "main2.cc",'a' );
+	Cliente cliente ( (char *) COLA_SERVIDOR,'a' );
 
 	for ( int i=0;i<CANTIDAD_INTERCAMBIOS;i++ ) {
 

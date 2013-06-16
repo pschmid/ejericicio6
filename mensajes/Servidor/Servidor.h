@@ -10,6 +10,8 @@
 #include <string>
 #include <list>
 #include <fstream>
+#include <map>
+
 using namespace std;
 
 #include "Mensajes.h"
@@ -23,6 +25,7 @@ class Servidor {
 		mensaje peticionRecibida;
 		mensaje respuesta;
 		vector<mensaje> datos;
+		map<int, Cola<mensaje>*> clientes;
 
 	public:
 		Servidor ( char* archivo,char letra );
@@ -30,7 +33,7 @@ class Servidor {
 
 		int recibirPeticion ();
 		int procesarPeticion ();
-		int responderPeticion ();
+		int responderPeticion (int);
 		void iniciar();
 
 		mensaje getPeticionRecibida ();
