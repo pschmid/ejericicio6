@@ -12,14 +12,14 @@ template <class T> class Cola {
 		int		id;
 
 	public:
-		Cola ( const char* archivo,char letra );
+		Cola ( const char* archivo,int letra );
 		~Cola();
 		int escribir ( T dato );
 		int leer ( int tipo,T* buffer );
 		int destruir ();
 };
 
-template <class T> Cola<T> :: Cola ( const char* archivo,char letra ) {
+template <class T> Cola<T> :: Cola ( const char* archivo,int letra ) {
 	this->clave = ftok ( archivo,letra );
 	if ( this->clave == -1 )
 		perror ( "Error en ftok" );

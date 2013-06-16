@@ -14,9 +14,10 @@
 
 using namespace std;
 
-#include "Mensajes.h"
-#include "Cola.h"
-#include "MemoriaCompartida.h"
+#include "../Common/Mensajes.h"
+#include "../Common/Cola.h"
+#include "../Common/Util.h"
+#include "../Common/Constants.h"
 
 class Servidor {
 

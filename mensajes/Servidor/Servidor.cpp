@@ -1,7 +1,7 @@
 #include "Servidor.h"
 
 Servidor :: Servidor ( char* archivo,char letra ) {
-	this->cola = new Cola<mensaje> ( archivo,letra );
+	this->cola = new Cola<mensaje> ( (char*)COLA_SERVIDOR,letra );
 }
 
 Servidor :: ~Servidor () {
@@ -32,7 +32,7 @@ int Servidor :: procesarPeticion () {
 
 	if(encontrado == false){
 		   cout <<"nuevo cliente con pid "<< clientPid <<endl;
-		   nuevoCliente = new Cola<mensaje> (Util().itoa(clientPid).c_str(),'a' );
+		   nuevoCliente = new Cola<mensaje> ((char *) COLA_CLIENTE ,clientPid);
 		   clientes[clientPid] = nuevoCliente;
 	}
 

@@ -13,9 +13,8 @@
 #include <sys/wait.h>
 
 #include "Cliente.h"
-#include "Servidor.h"
-#include "Mensajes.h"
-#include "MemoriaCompartida.h"
+#include "../Common/Mensajes.h"
+
 
 #define CANTIDAD_INTERCAMBIOS	3
 

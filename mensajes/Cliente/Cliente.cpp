@@ -1,8 +1,8 @@
 #include "Cliente.h"
 
 Cliente :: Cliente ( char* archivo,char letra ) {
-	this->colaEnvios = new Cola<mensaje> ( archivo,letra );
-	this->colaRecibos = new Cola<mensaje> ( Util().itoa(getpid()).c_str(),letra );
+	this->colaEnvios = new Cola<mensaje> ((char *) COLA_SERVIDOR,letra );
+	this->colaRecibos = new Cola<mensaje> ((char *) COLA_CLIENTE ,getpid());
 	this->iniciarComunicacion();
 }
 
