@@ -1,5 +1,9 @@
 #ifndef MENSAJES_H_
 #define MENSAJES_H_
+
+#include <sys/types.h>
+#include <unistd.h>
+
 #define IDENTIFICACION 0
 #define	INSERTAR	1
 #define CONSULTAR	2
@@ -11,6 +15,7 @@
 
 typedef struct mensaje {
 	long mtype;
+	unsigned long pid;
 	int id;
 	char nombre[NOMBRE_SIZE];
 	char direccion[DIRECCION_SIZE];

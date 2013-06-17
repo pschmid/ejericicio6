@@ -14,10 +14,11 @@ Cliente :: ~Cliente() {
 }
 
 void Cliente::iniciarComunicacion(){
-	mensaje peticion;
-	peticion.mtype = IDENTIFICACION;
-	peticion.id = getpid();
+	mensaje peticion = MensajeFactory().crearMensajeAviso();
+
 	this->colaEnvios->escribir ( peticion );
+
+	cout<<" soy cliente con pid "<< getpid()<<"y "<<peticion.pid<<endl;
 
 }
 

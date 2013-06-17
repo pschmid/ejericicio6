@@ -47,7 +47,7 @@ int main(int argc, char* argv[] ) {
 
 		// se envia el mensaje al servidor
 		mensaje rta = cliente.enviarPeticion (cliente.recibirEntrada());
-		cout << "Cliente: respuesta recibida = (ID = " << rta.id << ") - " << rta.nombre << endl;
+		cout << "Cliente: respuesta recibida = (ID = " << rta.pid << ") - " << rta.nombre << endl;
 
 	}
 

@@ -9,6 +9,7 @@
 #include "../Common/Cola.h"
 #include "../Common/Util.h"
 #include "../Common/Constants.h"
+#include "../Common/MensajeFactory.h"
 
 using namespace std;
 
