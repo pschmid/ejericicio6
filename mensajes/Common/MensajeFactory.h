@@ -21,7 +21,7 @@ class MensajeFactory {
 
 public:
 	MensajeFactory();
-	static mensaje crearMensajeAviso();
+	static mensaje crearMensajeAviso(int);
 	static mensaje crearMensajeRespuesta();
 
 };

@@ -14,12 +14,6 @@ int Servidor :: recibirPeticion () {
 
 	this->cola->leer ( IDENTIFICACION,&recibido );
 
-	cout<<"nombre "<<recibido.nombre<<endl;
-	cout<<"tel"<<recibido.telefono<<endl;
-
-	cout<<"dir "<<recibido.direccion<<endl;
-	cout<<"pid"<<recibido.pid<<endl;
-
 	//this->datos.push_back(this->peticionRecibida);
 	return 0;
 }
@@ -28,12 +22,11 @@ int Servidor :: procesarPeticion () {
 
 	cout<<"nombre "<<this->peticionRecibida.nombre<<endl;
 	cout<<"tel"<<this->peticionRecibida.telefono<<endl;
-
 	cout<<"dir "<<this->peticionRecibida.direccion<<endl;
 	cout<<"pid"<<this->peticionRecibida.pid<<endl;
 
 	Cola<mensaje>* nuevoCliente;
-	int clientPid = atoi(this->peticionRecibida.pid);
+	int clientPid = this->peticionRecibida.pid;
 	bool encontrado = false;
 
 	for( map<int,Cola<mensaje>*>::iterator ii=clientes.begin(); ii!=clientes.end(); ++ii)
@@ -59,7 +52,7 @@ int Servidor :: procesarPeticion () {
 	strcat ( txt_respuesta,"]" );
 
 	this->respuesta.mtype = RESPUESTA;
-//	this->respuesta.pid = getpid();
+
 	strcpy ( this->respuesta.nombre,txt_respuesta );
 
 	return clientPid;
@@ -90,9 +83,9 @@ void Servidor ::iniciar(){
 		cout << "Servidor: peticion recibida: " << getPeticionRecibida().nombre << endl;
 		procesarPeticion ();
 
-		datos.push_back(getPeticionRecibida());
+		//datos.push_back(getPeticionRecibida());
 		cout << "Servidor: peticion procesada - enviando respuesta: " << getRespuesta().nombre << endl;
-		responderPeticion (atoi(getPeticionRecibida().pid));
+		responderPeticion (getPeticionRecibida().pid);
 		cout << "Servidor: respuesta enviada" << endl << endl;
 
 	}

@@ -11,10 +11,11 @@ MensajeFactory::MensajeFactory() {
 
 }
 
-mensaje MensajeFactory::crearMensajeAviso(){
+mensaje MensajeFactory::crearMensajeAviso(int pid){
+	int nuevo = pid;
 	mensaje mensaje;
 	mensaje.mtype = IDENTIFICACION;
-	strcpy(mensaje.pid,Util().itoa(getpid()).c_str());
+	mensaje.pid = nuevo;
 
 	return mensaje;
 
