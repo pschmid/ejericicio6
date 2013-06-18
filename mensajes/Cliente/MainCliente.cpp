@@ -43,6 +43,8 @@ int main(int argc, char* argv[] ) {
 	// cliente
 	Cliente cliente ( (char *) COLA_SERVIDOR,'a' );
 
+//	cliente.iniciarComunicacion();
+
 	for ( int i=0;i<CANTIDAD_INTERCAMBIOS;i++ ) {
 
 		// se envia el mensaje al servidor

@@ -1,7 +1,7 @@
 #include "Servidor.h"
 
 Servidor :: Servidor ( char* archivo,char letra ) {
-	this->cola = new Cola<mensaje> ( (char*)COLA_SERVIDOR,letra );
+	this->cola = new Cola<mensaje> ( archivo,letra );
 }
 
 Servidor :: ~Servidor () {
@@ -10,20 +10,19 @@ Servidor :: ~Servidor () {
 
 int Servidor :: recibirPeticion () {
 
-	mensaje recibido;
+	this->cola->leer ( IDENTIFICACION,&(this->peticionRecibida) );
 
-	this->cola->leer ( IDENTIFICACION,&recibido );
+	cout<<"nombre "<<this->peticionRecibida.nombre<<endl;
+	cout<<"tel"<<this->peticionRecibida.telefono<<endl;
+
+	cout<<"dir "<<this->peticionRecibida.direccion<<endl;
+	cout<<"pid"<<(int)this->peticionRecibida.pid<<endl;
 
 	//this->datos.push_back(this->peticionRecibida);
 	return 0;
 }
 
 int Servidor :: procesarPeticion () {
-
-	cout<<"nombre "<<this->peticionRecibida.nombre<<endl;
-	cout<<"tel"<<this->peticionRecibida.telefono<<endl;
-	cout<<"dir "<<this->peticionRecibida.direccion<<endl;
-	cout<<"pid"<<this->peticionRecibida.pid<<endl;
 
 	Cola<mensaje>* nuevoCliente;
 	int clientPid = this->peticionRecibida.pid;
@@ -52,7 +51,7 @@ int Servidor :: procesarPeticion () {
 	strcat ( txt_respuesta,"]" );
 
 	this->respuesta.mtype = RESPUESTA;
-
+	this->respuesta.pid = getpid();
 	strcpy ( this->respuesta.nombre,txt_respuesta );
 
 	return clientPid;
@@ -80,13 +79,13 @@ void Servidor ::iniciar(){
 	for ( int i=0;i<3;i++ ) {
 		cout << "Servidor: esperando peticiones" << endl;
 		recibirPeticion ();
-		cout << "Servidor: peticion recibida: " << getPeticionRecibida().nombre << endl;
+		cout << "Servidor: peticion recibida: " << endl;
 		procesarPeticion ();
 
 		//datos.push_back(getPeticionRecibida());
 		cout << "Servidor: peticion procesada - enviando respuesta: " << getRespuesta().nombre << endl;
 		responderPeticion (getPeticionRecibida().pid);
-		cout << "Servidor: respuesta enviada" << endl << endl;
+		cout << "Servidor: respuesta enviada" << endl;
 
 	}
 

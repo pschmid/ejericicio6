@@ -1,9 +1,10 @@
 #include "Cliente.h"
 
 Cliente :: Cliente ( char* archivo,char letra ) {
-	this->colaEnvios = new Cola<mensaje> ((char *) COLA_SERVIDOR,letra );
+
+	this->colaEnvios = new Cola<mensaje> (archivo,letra );
 	this->colaRecibos = new Cola<mensaje> ((char *) COLA_CLIENTE ,getpid());
-	this->iniciarComunicacion();
+
 }
 
 Cliente :: ~Cliente() {
@@ -14,11 +15,17 @@ Cliente :: ~Cliente() {
 }
 
 void Cliente::iniciarComunicacion(){
-	mensaje peticion = MensajeFactory().crearMensajeAviso(getpid());
 
-	this->colaEnvios->escribir ( peticion );
 
-	cout<<" soy cliente con pid "<< getpid()<<"y "<<peticion.pid<< " tamaño"<<sizeof(peticion)<<endl;
+	this->colaEnvios->escribir ( MensajeFactory().crearMensajeAviso(getpid()) );
+	cout<<" soy cliente con pid "<< getpid()<<endl;
+
+	mensaje respuesta;
+	this->colaRecibos->leer ( RESPUESTA,&respuesta );
+	cout<<"respuesta obtenida"<<endl;
+
+	cout << "Cliente: respuesta recibida = (ID = " << respuesta.pid << ") - " << endl;
+
 
 }
 
@@ -67,6 +74,7 @@ mensaje Cliente :: armarHeader(long mtype,vector<string> entrada){
 	}
 
 	peticion.mtype = mtype;
+	peticion.pid = getpid();
 
 	for (int i = 1; i < (int)entrada.size(); i++) {
 

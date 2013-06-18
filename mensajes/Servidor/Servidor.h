@@ -11,7 +11,7 @@
 #include <list>
 #include <fstream>
 #include <map>
-
+#include <unistd.h>
 using namespace std;
 
 #include "../Common/Mensajes.h"
