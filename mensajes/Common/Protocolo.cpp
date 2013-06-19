@@ -22,6 +22,14 @@ bool Protocolo::esComandoInsertar(const string& c) {
 	return c.compare("insertar") == 0 || c.compare("I") == 0;
 }
 
+bool Protocolo::esComandoModificar(const string& c) {
+	return c.compare("modificar") == 0 || c.compare("M") == 0;
+}
+
+bool Protocolo::esComandoBorrar(const string& c) {
+	return c.compare("borrar") == 0 || c.compare("B") == 0;
+}
+
 bool Protocolo::esComandoConsultar(const string& c) {
 	return c.compare("consultar") == 0 || c.compare("C") == 0;
 }
@@ -43,14 +51,21 @@ mensaje Protocolo::getMensajeRespuesta() {
 	return m;
 }
 
+// FIXME sacar este horrible if else if y hacer un map o algo como la gente
 long Protocolo::getMType(const string& cmd) {
-	long mtype;
+	long mtype = 0;
 	if (esComandoInsertar(cmd)) {
 		mtype = INSERTAR;
 		cout << "Insertar:" << endl;
 	} else if (esComandoConsultar(cmd)) {
 		mtype = CONSULTAR;
 		cout << "Consultar:" << endl;
+	} else if (esComandoBorrar(cmd)){
+		mtype = ELIMINAR;
+		cout << "Borrar:" << endl;
+	} else if (esComandoModificar(cmd)){
+		mtype = MODIFICAR;
+		cout << "Modificar:" << endl;
 	}
 	return mtype;
 }
@@ -61,12 +76,14 @@ mensaje Protocolo::getMensajePeticion() {
 	peticion.mtype = this->getMType(this->entrada[0]);
 	peticion.pid = getpid();
 
-	vector<string>::const_iterator it = find(this->entrada.begin(),	this->entrada.end(), "-n");
-	nombre = (it != this->entrada.end()) ? *(it + 1) : "";
-	it = find(this->entrada.begin(), this->entrada.end(), "-t");
-	telefono = (it != this->entrada.end()) ? *(it + 1) : "";
-	it = find(this->entrada.begin(), this->entrada.end(), "-d");
-	direccion = (it != this->entrada.end()) ? *(it + 1) : "";
+	vector<string>::const_iterator itNom, itTel,itDir;
+	itNom = find(this->entrada.begin(),	this->entrada.end(), "-n");
+	itTel = find(this->entrada.begin(), this->entrada.end(), "-t");
+	itDir = find(this->entrada.begin(), this->entrada.end(), "-d");
+
+	nombre = (itNom != this->entrada.end()) ? *(itNom + 1) : "";
+	telefono = (itTel != this->entrada.end()) ? *(itTel + 1) : "";
+	direccion = (itDir != this->entrada.end()) ? *(itDir + 1) : "";
 
 	strcpy(peticion.nombre, nombre .c_str());
 	strcpy(peticion.telefono, telefono.c_str());

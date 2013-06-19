@@ -34,9 +34,12 @@ int Servidor :: procesarPeticion () {
 		}
 
 		if(encontrado == false){
-			   cout <<"Se creo un nuevo cliente en la base de datos (DEBUG: PID "<< clientPid << ")"<<endl;
-			   nuevoCliente = new Cola<mensaje> ((char *) COLA_CLIENTE ,clientPid);
-			   clientes[clientPid] = nuevoCliente;
+			Registro reg;
+			reg.crearDesdeMensaje(peticionRecibida);
+			this->bd.insertar(reg);
+			cout <<"Se creo un nuevo cliente en la base de datos (DEBUG: PID "<< clientPid << ")"<<endl;
+			nuevoCliente = new Cola<mensaje> ((char *) COLA_CLIENTE ,clientPid);
+			clientes[clientPid] = nuevoCliente;
 		}
 
 		char txt_respuesta[100];
@@ -79,6 +82,10 @@ mensaje Servidor :: getMensaje(int id){
 }
 
 void Servidor ::iniciar(){
+//	SIGINT_Handler sigint_handler;
+//	SignalHandler :: getInstance()->registrarHandler( SIGINT, &sigint_handler );
+//	while (sigint_handler.getGracefulQuit() == 0) {
+	//FIXME crear un handler para sigint y asi salir del servidor limpiamente con Ctrl+C
 	for ( int i=0;i<3;i++ ) {
 		cout << "Servidor: esperando peticiones" << endl;
 		recibirPeticion ();

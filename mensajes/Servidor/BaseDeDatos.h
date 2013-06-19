@@ -8,8 +8,11 @@
 #ifndef BASEDEDATOS_H_
 #define BASEDEDATOS_H_
 
+#define ARCHIVO_BASE "basededatos.bin"
+
 #include <vector>
 #include <string>
+#include <fstream>
 #include "Registro.h"
 
 using namespace std;
@@ -17,11 +20,14 @@ using namespace std;
 class BaseDeDatos {
 public:
 	BaseDeDatos();
-	int insertar();
-	vector<Registro> consulta(string cons);
+	int insertar(Registro r);
+	int borrar(Registro r);
+	int modificar(Registro r);
+	vector<Registro> consultar(const Registro& aBuscar);
+    void cargarBaseDesdeArchivo();
 	virtual ~BaseDeDatos();
 private:
-	vector<Registro> datos;
+	vector<Registro> registros;
 };
 
 #endif /* BASEDEDATOS_H_ */

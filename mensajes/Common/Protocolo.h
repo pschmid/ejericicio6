@@ -33,6 +33,8 @@ private:
 	long getMType(const string& cmd);
 	bool esComandoInsertar(const string& c);
 	bool esComandoConsultar(const string& c);
+	bool esComandoBorrar(const string& c);
+	bool esComandoModificar(const string& c);
 };
 
 #endif /* PROTOCOLO_H_ */
