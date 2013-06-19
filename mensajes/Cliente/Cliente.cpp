@@ -1,137 +1,91 @@
 #include "Cliente.h"
 
-Cliente :: Cliente ( char* archivo,char letra ) {
-
-	this->colaEnvios = new Cola<mensaje> (archivo,letra );
-	this->colaRecibos = new Cola<mensaje> ((char *) COLA_CLIENTE ,getpid());
-
+Cliente::Cliente(char* archivo, char letra) {
+	this->colaEnvios = new Cola<mensaje> (archivo, letra);
+	this->colaRecibos = new Cola<mensaje> ((char *) COLA_CLIENTE, getpid());
 }
 
-Cliente :: ~Cliente() {
-	this->colaEnvios->destruir ();
+Cliente::~Cliente() {
 	this->colaRecibos->destruir();
 	delete this->colaEnvios;
 	delete this->colaRecibos;
 }
 
-void Cliente::iniciarComunicacion(){
+void Cliente::iniciarComunicacion() {
+	//	this->colaEnvios->escribir ( MensajeFactory().crearMensajeAviso(getpid()) );
+	//	cout<<" soy cliente con pid "<< getpid()<<endl;
+	//
+	//	mensaje respuesta;
+	//	this->colaRecibos->leer ( RESPUESTA,&respuesta );
+	//	cout<<"respuesta obtenida"<<endl;
+	//
+	//	cout << "Cliente: respuesta recibida = (ID = " << respuesta.pid << ") - " << endl;
+	cout << "Bienvenido al gestor de Base de Datos v1.0" << endl << endl;
+	cout << "Ingrese el comando deseado por favor (help para ayuda)." << endl;
 
-
-	this->colaEnvios->escribir ( MensajeFactory().crearMensajeAviso(getpid()) );
-	cout<<" soy cliente con pid "<< getpid()<<endl;
-
-	mensaje respuesta;
-	this->colaRecibos->leer ( RESPUESTA,&respuesta );
-	cout<<"respuesta obtenida"<<endl;
-
-	cout << "Cliente: respuesta recibida = (ID = " << respuesta.pid << ") - " << endl;
-
-
+	mensaje peticion = this->recibirEntrada();
+	while (!this->salir()) {
+		mensaje rta = this->enviarPeticion(peticion);
+		cout << "Cliente: respuesta recibida = (ID = " << rta.pid << ") - "	<< rta.nombre << endl;
+		peticion = this->recibirEntrada();
+	}
 }
 
-mensaje Cliente :: recibirEntrada(){
-
-	string input = "";
-	long mtype = 1;
-	bool leerEntrada = true;
-	vector <string> entrada;
-
-	while(leerEntrada){
-		input.clear();
-		entrada.clear();
-
-		while(input.empty()){
-			getline(cin, input);
-			cout << "You entered: " << input.size() << endl;
-		}
-
-
-		cout << "You entered: " << input << endl;
-
-		input+= SEPARADOR;
-
-		entrada =  Util().split(input, SEPARADOR);
-
-		if(entrada[0].compare("insertar")==0 || entrada[0].compare("consultar")==0){
-			leerEntrada = false;
-			cout << "para "<< entrada[0] << endl;
-		}
-	}
-	return this->armarHeader(mtype,entrada);
-
-
+bool Cliente::esComandoSalir(const string& c) {
+	return c.compare("salir") == 0 || c.compare("S") == 0;
 }
 
-mensaje Cliente :: armarHeader(long mtype,vector<string> entrada){
-
-	mensaje peticion;
-	if(entrada[0].compare("insertar")==0){
-		mtype = INSERTAR;
-		cout << "para insertar" << endl;
-	}else if (entrada[0].compare("consultar")==0){
-		mtype = CONSULTAR;
-		cout << "para consultar" << endl;
-	}
-
-	peticion.mtype = mtype;
-	peticion.pid = getpid();
-
-	for (int i = 1; i < (int)entrada.size(); i++) {
-
-		cout << "valor de entrada " << i << "  "<<entrada[i] <<endl;
-
-		if(entrada[i].compare("-n")==0){
-			unsigned int j=i;
-			string nombre = "";
-			while(j<entrada.size()-1){
-				if(entrada[j+1].compare("-t")==0 || entrada[j+1].compare("-d")==0){
-					break;
-				}
-				nombre+=entrada[j+1]+SEPARADOR;
-				j++;
-			}
-
-			strcpy(peticion.nombre,nombre.c_str());
-		}
-		if(entrada[i].compare("-d")==0){
-					unsigned int j=i;
-					string direccion = "";
-					while(j<entrada.size()-1){
-						if(entrada[j+1].compare("-t")==0 || entrada[j+1].compare("-n")==0){
-							break;
-						}
-						direccion+=entrada[j+1]+SEPARADOR;
-						j++;
-					}
-					strcpy(peticion.direccion,direccion.c_str());
-				}
-		if(entrada[i].compare("-t")==0){
-					unsigned int j=i;
-					string telefono = "";
-					while(j<entrada.size()-1){
-						if(entrada[j+1].compare("-t")==0 || entrada[j+1].compare("-d")==0){
-							break;
-						}
-						telefono+=entrada[j+1]+SEPARADOR;
-						j++;
-					}
-					strcpy(peticion.telefono,telefono.c_str());
-				}
-
-	}
-	cout << "nombre "<< peticion.nombre <<endl;
-	cout << "dir "<< peticion.direccion <<endl;
-	cout << "tel "<< peticion.telefono <<endl;
-	return peticion;
-
+bool Cliente::esComandoAyuda(const string& c) {
+	return c.compare("help") == 0 || c.compare("H") == 0;
 }
 
-mensaje Cliente :: enviarPeticion ( mensaje peticion ) {
+void Cliente::imprimirAyuda() {
+	cout << "Comandos disponibles" << endl;
+	cout << "- insertar(I) " << endl;
+	cout << "	Sintaxis: insertar/I -t <telefono> -n <nombre> -d <direccion> (orden indistinto)" << endl << endl;
+	cout << "- consultar(C)" << endl;
+	cout << "	Sintaxis: consultar/C -n <nombre>" << endl << endl;
+	cout << "- salir(S)" << endl;
+	cout << "- help(H)" << endl << endl;
+}
+
+void Cliente::setSalir(bool salir) {
+	this->_salir = salir;
+}
+
+bool Cliente::salir() {
+	return this->_salir;
+}
+
+mensaje Cliente::recibirEntrada() {
+	Protocolo protocolo;
+	string entrada = "";
+	bool val, sal;
+	do {
+		cout << "> ";
+		getline(cin, entrada);
+		if (esComandoAyuda(entrada)) {
+			this->imprimirAyuda();
+		}
+		val = protocolo.validarEntrada(entrada);
+		sal = esComandoSalir(entrada);
+	} while (!val && !sal);
+
+	if (esComandoSalir(entrada)) {
+		this->setSalir(true);
+		mensaje nulo;
+		return nulo;
+	}
+
+	return protocolo.getMensajePeticion();
+}
+
+mensaje Cliente::enviarPeticion(mensaje peticion) {
 
 	mensaje respuesta;
 
-	this->colaEnvios->escribir ( peticion );
-	this->colaRecibos->leer ( RESPUESTA,&respuesta );
+	this->colaEnvios->escribir(peticion);
+	this->colaRecibos->leer(RESPUESTA, &respuesta);
 
 	return respuesta;
 }

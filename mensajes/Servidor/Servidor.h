@@ -14,20 +14,20 @@
 #include <unistd.h>
 using namespace std;
 
-#include "../Common/Mensajes.h"
+#include "../Common/Mensaje.h"
 #include "../Common/Cola.h"
 #include "../Common/Util.h"
 #include "../Common/Constants.h"
+#include "../Common/Protocolo.h"
+#include "BaseDeDatos.h"
 
 class Servidor {
-
 	private:
 		Cola<mensaje>* cola;
 		mensaje peticionRecibida;
 		mensaje respuesta;
-		vector<mensaje> datos;
+		BaseDeDatos bd;
 		map<int, Cola<mensaje>*> clientes;
-
 	public:
 		Servidor ( char* archivo,char letra );
 		virtual ~Servidor ();
@@ -40,7 +40,6 @@ class Servidor {
 		mensaje getPeticionRecibida ();
 		mensaje getRespuesta ();
 		mensaje getMensaje(int);
-
 };
 
 #endif /* SERVIDOR_H_ */

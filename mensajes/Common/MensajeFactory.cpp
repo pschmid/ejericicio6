@@ -18,7 +18,4 @@ mensaje MensajeFactory::crearMensajeAviso(int pid){
 	mensaje.pid = nuevo;
 
 	return mensaje;
-
 }
-
-

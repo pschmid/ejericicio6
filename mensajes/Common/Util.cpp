@@ -18,23 +18,23 @@ string Util::itoa(int number){
 }
 
 vector<string> Util::split(string cadena , char separator){
-
 	vector<string> resultado;
 	size_t encontrado;
 	int inicio = 0;
-
 	encontrado=cadena.find_first_of(separator);
-	while (encontrado!=string::npos) {
+	while (encontrado != string::npos) {
 		string termino = cadena.substr(inicio,encontrado - inicio);
-
 		if (termino.size()) {
 			resultado.push_back(termino);
 		}
 	    inicio = encontrado + 1;
-	    encontrado=cadena.find_first_of(separator,encontrado+1);
+	    encontrado = cadena.find_first_of(separator,encontrado+1);
 	}
-
+	// Agregar el ultimo
+	string termino = cadena.substr(inicio);
+	if (termino.size()) {
+		resultado.push_back(termino);
+	}
 	return resultado;
-
 }
 

@@ -6,7 +6,8 @@
 #include <string>
 #include <sstream>
 #include <unistd.h>
-#include "../Common/Mensajes.h"
+#include "../Common/Mensaje.h"
+#include "../Common/Protocolo.h"
 #include "../Common/Cola.h"
 #include "../Common/Util.h"
 #include "../Common/Constants.h"
@@ -15,18 +16,21 @@
 using namespace std;
 
 class Cliente {
-
-	private:
-		Cola<mensaje>* colaEnvios;
-		Cola<mensaje>* colaRecibos;
-
-	public:
-		Cliente (char* archivo,char letra );
-		virtual ~Cliente();
-		mensaje enviarPeticion ( mensaje);
-		mensaje recibirEntrada();
-		mensaje armarHeader(long ,vector<string>);
-		void iniciarComunicacion();
+private:
+	Cola<mensaje>* colaEnvios;
+	Cola<mensaje>* colaRecibos;
+	bool _salir;
+	void imprimirAyuda();
+	bool esComandoAyuda(const string& c);
+	bool esComandoSalir(const string& c);
+	mensaje enviarPeticion(mensaje);
+	mensaje recibirEntrada();
+public:
+	Cliente(char* archivo, char letra);
+	void iniciarComunicacion();
+	void setSalir(bool salir);
+	bool salir();
+	virtual ~Cliente();
 };
 
 #endif /* CLIENTE_H_ */

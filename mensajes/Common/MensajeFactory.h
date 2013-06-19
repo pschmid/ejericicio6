@@ -8,7 +8,7 @@
 #ifndef MENSAJEFACTORY_H_
 #define MENSAJEFACTORY_H_
 
-#include "Mensajes.h"
+#include "Mensaje.h"
 #include "Util.h"
 #include "unistd.h"
 #include <string.h>
