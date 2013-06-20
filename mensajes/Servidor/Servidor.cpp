@@ -54,6 +54,7 @@ int Servidor :: procesarPeticion () {
 		respuesta.mtype = RESPUESTA;
 		respuesta.pid = getpid();
 		strcpy ( respuesta.nombre,txt_respuesta );
+		this->respuesta.push_back(respuesta);
 
 	} else if (protocolo.esMensajeConsultar(peticionRecibida)){
 		Registro reg;
