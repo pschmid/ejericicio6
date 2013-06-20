@@ -48,11 +48,17 @@ int Servidor :: procesarPeticion () {
 		strcat ( txt_respuesta,Util().itoa(clientPid).c_str() );
 		strcat ( txt_respuesta,"]" );
 
-		this->respuesta.mtype = RESPUESTA;
-		this->respuesta.pid = getpid();
-		strcpy ( this->respuesta.nombre,txt_respuesta );
+		mensaje respuesta;
+
+		respuesta.ttl=1;
+		respuesta.mtype = RESPUESTA;
+		respuesta.pid = getpid();
+		strcpy ( respuesta.nombre,txt_respuesta );
 
 	} else if (protocolo.esMensajeConsultar(peticionRecibida)){
+		Registro reg;
+		reg.crearDesdeMensaje(peticionRecibida);
+		this->consultarLaBase(reg);
 		// Consultar a la base
 	} else {
 		//Devolver respuesta con error
@@ -64,15 +70,42 @@ int Servidor :: procesarPeticion () {
 }
 
 int Servidor :: responderPeticion (int pidCliente) {
-	clientes[pidCliente]->escribir(this->respuesta);
+
+	for( vector<mensaje>::iterator ii=respuesta.begin(); ii!=respuesta.end(); ++ii) {
+		clientes[pidCliente]->escribir((*ii));
+	}
 	return 0;
+}
+//este metodo debe crear los mensajes con los registros y en ttl(time to leave)
+//debe poner la cantidad de registros que faltan enviar.
+//ej: si debo enviar 3 mensajes de respuesta, el primero poner ttl=3, el segundo ttl=2
+// y el tercero ttl=1. de esta manera el cleitne cuando lee el de ttl=1 deja de leer.
+vector<mensaje> Servidor :: getMensajesFromRegisters(vector<Registro> registros){
+	mensaje msg;
+	vector<mensaje> mensajes;
+	int cantRegs = registros.size();
+	for(vector<Registro>::iterator it=registros.begin(); it!=registros.end();++it){
+		msg = (*it).crearMensajeAsociado();
+		msg.ttl = cantRegs--;
+		msg.mtype = RESPUESTA;
+		msg.pid = getpid();
+		mensajes.push_back(msg);
+	}
+	return mensajes;
+}
+
+void Servidor :: consultarLaBase(Registro registro){
+
+	vector<Registro> resultado = this->bd.consultar(registro);
+	this->respuesta = this->getMensajesFromRegisters(resultado);
+
 }
 
 mensaje Servidor :: getPeticionRecibida () {
 	return this->peticionRecibida;
 }
 
-mensaje Servidor :: getRespuesta () {
+vector<mensaje> Servidor :: getRespuesta () {
 	return this->respuesta;
 }
 
@@ -93,7 +126,7 @@ void Servidor ::iniciar(){
 		procesarPeticion ();
 
 		//datos.push_back(getPeticionRecibida());
-		cout << "Servidor: peticion procesada - enviando respuesta: " << getRespuesta().nombre << endl;
+		cout << "Servidor: peticion procesada - enviando respuesta: " << endl;
 		responderPeticion (getPeticionRecibida().pid);
 		cout << "Servidor: respuesta enviada" << endl;
 	}

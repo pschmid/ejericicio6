@@ -29,6 +29,7 @@ public:
 	Registro(char nombre[NOMBRE_SIZE], char direccion[DIRECCION_SIZE], char telefono[TELEFONO_SIZE]);
 	void crearDesdeMensaje(mensaje m);
 	void crearDesdeRegistro(t_registro r);
+	mensaje crearMensajeAsociado();
 	t_registro& getRegistroASerializar();
 	int getSize();
 	string getDireccion() const;

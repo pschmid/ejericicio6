@@ -19,6 +19,7 @@
 typedef struct mensaje {
 	long mtype;
 	int pid;
+	int ttl;
 	char nombre[NOMBRE_SIZE];
 	char direccion[DIRECCION_SIZE];
 	char telefono[TELEFONO_SIZE];

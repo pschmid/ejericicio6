@@ -25,8 +25,7 @@ void Cliente::iniciarComunicacion() {
 
 	mensaje peticion = this->recibirEntrada();
 	while (!this->salir()) {
-		mensaje rta = this->enviarPeticion(peticion);
-		cout << "Cliente: respuesta recibida = (ID = " << rta.pid << ") - "	<< rta.nombre << endl;
+		this->enviarPeticion(peticion);
 		peticion = this->recibirEntrada();
 	}
 }
@@ -80,12 +79,17 @@ mensaje Cliente::recibirEntrada() {
 	return protocolo.getMensajePeticion();
 }
 
-mensaje Cliente::enviarPeticion(mensaje peticion) {
+int Cliente::enviarPeticion(mensaje peticion) {
 
 	mensaje respuesta;
 
 	this->colaEnvios->escribir(peticion);
 	this->colaRecibos->leer(RESPUESTA, &respuesta);
+	while(respuesta.ttl > 1){
+		cout<<" paquete recibido numero "<<respuesta.ttl<<endl;
+		cout << "Cliente: respuesta recibida = (ID = " << respuesta.pid << ") - "	<< respuesta.nombre << endl;
+		this->colaRecibos->leer(RESPUESTA, &respuesta);
+	}
 
-	return respuesta;
+	return 0;
 }

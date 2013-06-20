@@ -24,6 +24,13 @@ void Registro::crearDesdeMensaje(mensaje m){
 	strcpy(registro.nombre, m.nombre);
 	strcpy(registro.telefono, m.telefono);
 }
+mensaje Registro :: crearMensajeAsociado(){
+	mensaje m;
+	strcpy(m.direccion,registro.direccion);
+	strcpy(m.nombre, registro.nombre);
+	strcpy(m.telefono,registro.telefono);
+	return m;
+}
 
 void Registro::crearDesdeRegistro(t_registro r){
 	strcpy(registro.direccion, r.direccion);

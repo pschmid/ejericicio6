@@ -23,7 +23,7 @@ private:
 	void imprimirAyuda();
 	bool esComandoAyuda(const string& c);
 	bool esComandoSalir(const string& c);
-	mensaje enviarPeticion(mensaje);
+	int enviarPeticion(mensaje);
 	mensaje recibirEntrada();
 public:
 	Cliente(char* archivo, char letra);

@@ -25,9 +25,13 @@ class Servidor {
 	private:
 		Cola<mensaje>* cola;
 		mensaje peticionRecibida;
-		mensaje respuesta;
+		vector<mensaje> respuesta;
 		BaseDeDatos bd;
 		map<int, Cola<mensaje>*> clientes;
+
+		void consultarLaBase(Registro);
+		vector<mensaje> getMensajesFromRegisters(vector<Registro> registros);
+
 	public:
 		Servidor ( char* archivo,char letra );
 		virtual ~Servidor ();
@@ -38,8 +42,9 @@ class Servidor {
 		void iniciar();
 
 		mensaje getPeticionRecibida ();
-		mensaje getRespuesta ();
+		vector<mensaje> getRespuesta ();
 		mensaje getMensaje(int);
+
 };
 
 #endif /* SERVIDOR_H_ */
