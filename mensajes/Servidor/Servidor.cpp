@@ -34,13 +34,14 @@ int Servidor :: procesarPeticion () {
 		}
 
 		if(encontrado == false){
-			Registro reg;
-			reg.crearDesdeMensaje(peticionRecibida);
-			this->bd.insertar(reg);
 			cout <<"Se creo un nuevo cliente en la base de datos (DEBUG: PID "<< clientPid << ")"<<endl;
 			nuevoCliente = new Cola<mensaje> ((char *) COLA_CLIENTE ,clientPid);
 			clientes[clientPid] = nuevoCliente;
 		}
+
+		Registro reg;
+		reg.crearDesdeMensaje(peticionRecibida);
+		this->bd.insertar(reg);
 
 		char txt_respuesta[100];
 
@@ -72,9 +73,10 @@ int Servidor :: procesarPeticion () {
 
 int Servidor :: responderPeticion (int pidCliente) {
 
-	for( vector<mensaje>::iterator ii=respuesta.begin(); ii!=respuesta.end(); ++ii) {
+	for( vector<mensaje>::iterator ii=respuesta.begin(); ii!=respuesta.end(); ii++) {
 		clientes[pidCliente]->escribir((*ii));
 	}
+	respuesta.clear();
 	return 0;
 }
 //este metodo debe crear los mensajes con los registros y en ttl(time to leave)
@@ -85,7 +87,8 @@ vector<mensaje> Servidor :: getMensajesFromRegisters(vector<Registro> registros)
 	mensaje msg;
 	vector<mensaje> mensajes;
 	int cantRegs = registros.size();
-	for(vector<Registro>::iterator it=registros.begin(); it!=registros.end();++it){
+	cout << "cantidad de registros en la base "<<cantRegs;
+	for(vector<Registro>::iterator it=registros.begin(); it!=registros.end();it++){
 		msg = (*it).crearMensajeAsociado();
 		msg.ttl = cantRegs--;
 		msg.mtype = RESPUESTA;
@@ -120,7 +123,7 @@ void Servidor ::iniciar(){
 //	SignalHandler :: getInstance()->registrarHandler( SIGINT, &sigint_handler );
 //	while (sigint_handler.getGracefulQuit() == 0) {
 	//FIXME crear un handler para sigint y asi salir del servidor limpiamente con Ctrl+C
-	for ( int i=0;i<3;i++ ) {
+	for ( int i=0;i<10;i++ ) {
 		cout << "Servidor: esperando peticiones" << endl;
 		recibirPeticion ();
 		cout << "Servidor: peticion recibida: " << endl;

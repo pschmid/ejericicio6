@@ -85,10 +85,13 @@ int Cliente::enviarPeticion(mensaje peticion) {
 
 	this->colaEnvios->escribir(peticion);
 	this->colaRecibos->leer(RESPUESTA, &respuesta);
+	cout<<" paquete recibido numero "<<respuesta.ttl<<endl;
+	cout << "Cliente: respuesta recibida = (ID = " << respuesta.pid << ") - "	<< respuesta.nombre << endl;
+
 	while(respuesta.ttl > 1){
+		this->colaRecibos->leer(RESPUESTA, &respuesta);
 		cout<<" paquete recibido numero "<<respuesta.ttl<<endl;
 		cout << "Cliente: respuesta recibida = (ID = " << respuesta.pid << ") - "	<< respuesta.nombre << endl;
-		this->colaRecibos->leer(RESPUESTA, &respuesta);
 	}
 
 	return 0;
