@@ -11,22 +11,14 @@ Cliente::~Cliente() {
 	delete this->colaRecibos;
 }
 
-void Cliente::iniciarComunicacion() {
-	//	this->colaEnvios->escribir ( MensajeFactory().crearMensajeAviso(getpid()) );
-	//	cout<<" soy cliente con pid "<< getpid()<<endl;
-	//
-	//	mensaje respuesta;
-	//	this->colaRecibos->leer ( RESPUESTA,&respuesta );
-	//	cout<<"respuesta obtenida"<<endl;
-	//
-	//	cout << "Cliente: respuesta recibida = (ID = " << respuesta.pid << ") - " << endl;
+void Cliente::iniciar() {
 	cout << "Bienvenido al gestor de Base de Datos v1.0" << endl << endl;
 	cout << "Ingrese el comando deseado por favor (help para ayuda)." << endl;
-
-	mensaje peticion = this->recibirEntrada();
+	mensaje peticion = this->leerEntrada();
 	while (!this->salir()) {
 		this->enviarPeticion(peticion);
-		peticion = this->recibirEntrada();
+		this->recibirRespuesta();
+		peticion = this->leerEntrada();
 	}
 }
 
@@ -56,7 +48,7 @@ bool Cliente::salir() {
 	return this->_salir;
 }
 
-mensaje Cliente::recibirEntrada() {
+mensaje Cliente::leerEntrada() {
 	Protocolo protocolo;
 	string entrada = "";
 	bool val, sal;
@@ -75,24 +67,30 @@ mensaje Cliente::recibirEntrada() {
 		mensaje nulo;
 		return nulo;
 	}
-
 	return protocolo.getMensajePeticion();
 }
 
-int Cliente::enviarPeticion(mensaje peticion) {
-
+void Cliente::recibirRespuesta()
+{
 	mensaje respuesta;
-
-	this->colaEnvios->escribir(peticion);
-	this->colaRecibos->leer(RESPUESTA, &respuesta);
-	cout<<" paquete recibido numero "<<respuesta.ttl<<endl;
-	cout << "Cliente: respuesta recibida = (ID = " << respuesta.pid << ") - "	<< respuesta.nombre << endl;
-
-	while(respuesta.ttl > 1){
+	Protocolo protocolo;
+	bool quedanMensajes = true;
+    while(quedanMensajes){
 		this->colaRecibos->leer(RESPUESTA, &respuesta);
-		cout<<" paquete recibido numero "<<respuesta.ttl<<endl;
-		cout << "Cliente: respuesta recibida = (ID = " << respuesta.pid << ") - "	<< respuesta.nombre << endl;
+		if(strlen(respuesta.textoRespuesta) > 0){
+			cout << respuesta.textoRespuesta << endl;
+		} else {
+			cout << "-----------------------------------------------------" << endl;
+			cout << "Nombre: " << respuesta.nombre << endl;
+			cout << "Direccion: " << respuesta.direccion << endl;
+			cout << "Telefono: " << respuesta.telefono << endl;
+			cout << "-----------------------------------------------------" << endl;
+		}
+		quedanMensajes = ( respuesta.ttl > 1 );
 	}
+}
 
-	return 0;
+int Cliente::enviarPeticion(mensaje peticion) {
+	this->colaEnvios->escribir(peticion);
+    return 0;
 }

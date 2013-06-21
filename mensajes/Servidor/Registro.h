@@ -9,6 +9,8 @@
 #define REGISTRO_H_
 
 #include "../Common/Mensaje.h"
+#include "../Common/Util.h"
+#include "../Common/Constants.h"
 #include <string>
 #include <algorithm>
 #include <string.h>
@@ -30,13 +32,13 @@ public:
 	void crearDesdeMensaje(mensaje m);
 	void crearDesdeRegistro(t_registro r);
 	mensaje crearMensajeAsociado();
-	t_registro& getRegistroASerializar();
-	int getSize();
+	t_registro getRegistroASerializar() const;
+	int getSize() const;
 	string getDireccion() const;
     string getNombre() const;
     string getTelefono() const;
-    static bool compararDuplicado(const Registro& r1, const Registro& r2);
-    static bool compararBusqueda(const Registro& r1, const Registro& r2);
+    bool compararDuplicado(const Registro& r2) const;
+    bool compararBusqueda(const Registro& r2, int op) const;
 	virtual ~Registro();
 };
 

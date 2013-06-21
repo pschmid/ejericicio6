@@ -18,10 +18,9 @@
 
 using namespace std;
 
-int main(int argc, char* argv[] ) {
+int main(int argc, char* argv[]) {
 	Cliente cliente ( (char *) COLA_SERVIDOR,'a' );
-	cliente.iniciarComunicacion();
+	cliente.iniciar();
 	wait ( NULL );
 	return 0;
 }
-

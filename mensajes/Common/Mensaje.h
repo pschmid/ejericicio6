@@ -14,17 +14,19 @@
 #define NOMBRE_SIZE	61
 #define DIRECCION_SIZE 120
 #define TELEFONO_SIZE 13
+#define RESPUESTA_SIZE 120
 
 
 typedef struct mensaje {
 	long mtype;
 	int pid;
 	int ttl;
+	int op;
+	char textoRespuesta[RESPUESTA_SIZE];
 	char nombre[NOMBRE_SIZE];
 	char direccion[DIRECCION_SIZE];
 	char telefono[TELEFONO_SIZE];
 } mensaje;
-
 
 class Mensaje {
 private:

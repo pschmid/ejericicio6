@@ -38,11 +38,11 @@ void Registro::crearDesdeRegistro(t_registro r){
 	strcpy(registro.telefono, r.telefono);
 }
 
-t_registro& Registro::getRegistroASerializar(){
+t_registro Registro::getRegistroASerializar() const{
 	return registro;
 }
 
-int Registro::getSize(){
+int Registro::getSize() const{
 	return sizeof(t_registro);
 }
 
@@ -64,13 +64,37 @@ string Registro::getTelefono() const
 	return t;
 }
 
- bool Registro::compararDuplicado(const Registro& r1, const Registro& r2){
-	 return true;
- }
+bool Registro::compararDuplicado(const Registro& r2) const{
+	string lowernom = Util::toLower(this->getNombre());
+	return lowernom.compare(Util::toLower(r2.getNombre())) == 0;
+}
 
- bool Registro::compararBusqueda(const Registro& r1, const Registro& r2){
-	 return true;
- }
+bool Registro::compararBusqueda(const Registro& r2, int op) const{
+	bool foundNom = false, foundDir = false, foundTel = false;
+	if (!r2.getNombre().empty()){
+		string lowernom = Util::toLower(this->getNombre());
+		foundNom = (lowernom.find(Util::toLower(r2.getNombre())) != string::npos);
+	} else if (op == COMP_AND){
+		foundNom = true;
+	}
+
+	if (!r2.getDireccion().empty()){
+		string lowerdir = Util::toLower(this->getDireccion());
+		foundDir = (lowerdir.find(Util::toLower(r2.getDireccion())) != string::npos);
+	} else if (op == COMP_AND){
+		foundDir = true;
+	}
+
+	if (!r2.getTelefono().empty()){
+		foundTel = (this->getTelefono().find(r2.getTelefono()) != string::npos);
+	}
+
+	if (op == COMP_AND){
+		return foundDir && foundTel && foundNom;
+	} else {
+		return foundDir || foundTel || foundNom;
+	}
+}
 
 Registro::~Registro() {
 }

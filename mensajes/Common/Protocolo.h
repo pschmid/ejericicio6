@@ -25,12 +25,16 @@ public:
 	bool validarEntrada(const string& s);
 	bool esMensajeInsertar(mensaje m);
 	bool esMensajeConsultar(mensaje m);
+	bool esMensajeRespuesta(mensaje m);
 	mensaje getMensajePeticion();
 	mensaje getMensajeRespuesta();
 	virtual ~Protocolo();
 private:
 	vector<string> entrada;
+    void parsearMensajeInsertar(mensaje & peticion);
+    void parsearMensajeConsultar(mensaje & peticion);
 	long getMType(const string& cmd);
+	int getOp(const string& op);
 	bool esComandoInsertar(const string& c);
 	bool esComandoConsultar(const string& c);
 	bool esComandoBorrar(const string& c);

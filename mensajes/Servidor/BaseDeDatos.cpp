@@ -30,23 +30,53 @@ BaseDeDatos::BaseDeDatos() {
     cargarBaseDesdeArchivo();
 }
 
-int BaseDeDatos::insertar(Registro r){
+bool BaseDeDatos::duplicado(const Registro& r){
+	vector<Registro>::iterator it;
+	it = find_if(this->registros.begin(), this->registros.end(), CompadorDuplicado(r));
+	return it != this->registros.end();
+}
+
+bool BaseDeDatos::datosRequeridos(const Registro& r){
+	return r.getNombre().empty();
+}
+
+
+int BaseDeDatos::insertar(const Registro& r){
+	if (this->duplicado(r)){
+		return ERR_DUPLICADO;
+	}
+	if (this->datosRequeridos(r)){
+		return ERR_CAMPO_REQUERIDO;
+	}
+
+	/* Insertar en cache */
 	this->registros.push_back(r);
 
+	/* Insertar en archivo */
 	fstream bdfile;
 	bdfile.open (ARCHIVO_BASE, ios_base::out | ios_base::binary | ios_base::app);
 	t_registro reg = r.getRegistroASerializar();
 	bdfile.write((char*)&reg, r.getSize());
 	bdfile.close();
 
-	return 0;
+	return SUCCESS;
 }
 
-vector<Registro> BaseDeDatos::consultar(const Registro& aBuscar){
-	//vector<Registro> v;
-	//vector<Registro>::iterator it = find_if(v.begin(), v.end(), Registro::compararBusqueda);
-	return this->registros;
+vector<Registro> BaseDeDatos::consultar(const Registro& aBuscar, int op){
+	vector<Registro> v;
+	vector<Registro>::iterator it = this->registros.begin();
+	while (it != this->registros.end()){
+		it = find_if(it, this->registros.end(), CompadorBusqueda(aBuscar, op));
+		if (it != this->registros.end()){
+			v.push_back(*it);
+			it++;
+		}
+	}
+	return v;
 }
 
 BaseDeDatos::~BaseDeDatos() {
+//	fstream bdfile;
+//	bdfile.open(ARCHIVO_BASE, ios_base::out| ios_base::binary | ios_base::trunc);
+//	bdfile.close();
 }

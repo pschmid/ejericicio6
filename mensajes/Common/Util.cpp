@@ -38,3 +38,10 @@ vector<string> Util::split(string cadena , char separator){
 	return resultado;
 }
 
+string Util::toLower(string cadena){
+	string lowercase("");
+	for(int i=0; i < (int)cadena.size(); i++) {
+		lowercase += (char) tolower(cadena[i]);
+	}
+	return lowercase;
+}

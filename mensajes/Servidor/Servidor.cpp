@@ -1,138 +1,147 @@
 #include "Servidor.h"
 
-Servidor :: Servidor ( char* archivo,char letra ) {
-	this->cola = new Cola<mensaje> ( archivo,letra );
+Servidor::Servidor(char* archivo, char letra) {
+	this->cola = new Cola<mensaje> (archivo, letra);
 }
 
-Servidor :: ~Servidor () {
+Servidor::~Servidor() {
 	this->cola->destruir();
 	delete this->cola;
 }
 
-int Servidor :: recibirPeticion () {
-	this->cola->leer ( IDENTIFICACION, &(this->peticionRecibida) );
-	//this->datos.push_back(this->peticionRecibida);
+int Servidor::recibirPeticion() {
+	int result = this->cola->leer(IDENTIFICACION, &(this->peticionRecibida));
+	if (result != -1){
+		cout << "Peticion recibida" << endl;
+	}
 	return 0;
 }
 
-int Servidor :: procesarPeticion () {
+void Servidor::insertarRegistro() {
 	Protocolo protocolo;
-	int clientPid = -1;
-
-	if (protocolo.esMensajeInsertar(peticionRecibida)){
-		Cola<mensaje>* nuevoCliente;
-
-		clientPid = this->peticionRecibida.pid;
-		bool encontrado = false;
-
-		for( map<int,Cola<mensaje>*>::iterator ii=clientes.begin(); ii!=clientes.end(); ++ii) {
-			if((*ii).first == clientPid){
-				cout <<"El usuario ya existe en la base de datos (DEBUG: PID "<< (*ii).first << ")" << endl;
-				encontrado = true;
-				break;
-			}
-		}
-
-		if(encontrado == false){
-			cout <<"Se creo un nuevo cliente en la base de datos (DEBUG: PID "<< clientPid << ")"<<endl;
-			nuevoCliente = new Cola<mensaje> ((char *) COLA_CLIENTE ,clientPid);
-			clientes[clientPid] = nuevoCliente;
-		}
-
-		Registro reg;
-		reg.crearDesdeMensaje(peticionRecibida);
-		this->bd.insertar(reg);
-
-		char txt_respuesta[100];
-
-		strcpy ( txt_respuesta,"[Respuesta a ");
-		strcat ( txt_respuesta,Util().itoa(clientPid).c_str() );
-		strcat ( txt_respuesta,"]" );
-
-		mensaje respuesta;
-
-		respuesta.ttl=1;
-		respuesta.mtype = RESPUESTA;
-		respuesta.pid = getpid();
-		strcpy ( respuesta.nombre,txt_respuesta );
-		this->respuesta.push_back(respuesta);
-
-	} else if (protocolo.esMensajeConsultar(peticionRecibida)){
-		Registro reg;
-		reg.crearDesdeMensaje(peticionRecibida);
-		this->consultarLaBase(reg);
-		// Consultar a la base
-	} else {
-		//Devolver respuesta con error
+	string resp;
+	/* Insertar en la base de datos */
+	Registro reg;
+	reg.crearDesdeMensaje(peticionRecibida);
+	int result = this->bd.insertar(reg);
+	if (result == SUCCESS){
+		resp = "El registro ha sido insertado con éxito con la siguiente información.";
+		resp += "\nNombre: " + reg.getNombre();
+		resp += "\nDirección: " + reg.getDireccion();
+		resp += "\nTeléfono: " + reg.getTelefono();
+		resp += "\n";
+	} else if (result == ERR_DUPLICADO){
+		resp = "El registro no se ha insertado con éxito pues está duplicado";
+	} else if (result == ERR_CAMPO_REQUERIDO){
+		resp = "El registro no se ha insertado con éxito pues faltan datos requeridos.";
 	}
 
+	/* Generar respuesta */
+	mensaje respuesta;
+	respuesta.ttl = 1;
+	respuesta.mtype = RESPUESTA;
+	respuesta.pid = getpid();
+	strcpy(respuesta.textoRespuesta, resp.c_str());
+	this->respuestas.push_back(respuesta);
+}
 
+int Servidor::procesarPeticion() {
+	int clientPid = this->peticionRecibida.pid;
+	Protocolo protocolo;
+	if (protocolo.esMensajeInsertar(peticionRecibida)) {
+		cout << "Procesando insertar registro." << endl;
+		this->insertarRegistro();
+	} else if (protocolo.esMensajeConsultar(peticionRecibida)) {
+		cout << "Procesando consultar registros." << endl;
+		this->consultarRegistros();
+	} else {
+		// FIXME devolver error
+	}
 
 	return clientPid;
 }
 
-int Servidor :: responderPeticion (int pidCliente) {
-
-	for( vector<mensaje>::iterator ii=respuesta.begin(); ii!=respuesta.end(); ii++) {
-		clientes[pidCliente]->escribir((*ii));
+int Servidor::responderPeticion(int pidCliente) {
+	// Seleccionar cola de mensajes en la cual responder
+	Cola<mensaje> *nuevoCliente;
+	map<int, Cola<mensaje> *>::iterator found = clientes.find(pidCliente);
+	if (found == clientes.end()){
+		nuevoCliente = new Cola<mensaje> ((char *) COLA_CLIENTE, pidCliente);
+		clientes[pidCliente] = nuevoCliente;
 	}
-	respuesta.clear();
+	// Responder
+	int resultado;
+	for (vector<mensaje>::iterator ii = respuestas.begin(); ii	!= respuestas.end(); ii++) {
+		resultado = clientes[pidCliente]->escribir((*ii));
+	}
+	if (resultado != -1){
+		cout << "Respuesta enviada." << endl<< endl;
+	}
+	respuestas.clear();
 	return 0;
 }
-//este metodo debe crear los mensajes con los registros y en ttl(time to leave)
-//debe poner la cantidad de registros que faltan enviar.
-//ej: si debo enviar 3 mensajes de respuesta, el primero poner ttl=3, el segundo ttl=2
-// y el tercero ttl=1. de esta manera el cleitne cuando lee el de ttl=1 deja de leer.
-vector<mensaje> Servidor :: getMensajesFromRegisters(vector<Registro> registros){
-	mensaje msg;
+
+vector<mensaje> Servidor::getMensajesDeRespuestaConsulta(vector<Registro> registros) {
+	mensaje respuesta;
+	Protocolo protocolo;
 	vector<mensaje> mensajes;
-	int cantRegs = registros.size();
-	cout << "cantidad de registros en la base "<<cantRegs;
-	for(vector<Registro>::iterator it=registros.begin(); it!=registros.end();it++){
-		msg = (*it).crearMensajeAsociado();
-		msg.ttl = cantRegs--;
-		msg.mtype = RESPUESTA;
-		msg.pid = getpid();
-		mensajes.push_back(msg);
+	string resp;
+	int ttl = registros.size() + 1;
+
+	/* Primer mensaje para mostrar */
+	if (!registros.empty()) {
+		resp = "Su consulta arrojó los siguientes (";
+		resp += Util::itoa(registros.size());
+		resp += ") resultados:\n";
+	} else {
+		resp = "Su consulta no arrojó ningún resultado.\n";
+	}
+	respuesta.mtype = RESPUESTA;
+	respuesta.ttl = ttl--;
+	respuesta.pid = getpid();
+	strcpy(respuesta.textoRespuesta, resp.c_str());
+	mensajes.push_back(respuesta);
+
+	/* Mensajes de respuesta */
+	for (vector<Registro>::iterator it = registros.begin(); it != registros.end(); it++) {
+		respuesta = (*it).crearMensajeAsociado();
+		respuesta.ttl = ttl--;
+		respuesta.mtype = RESPUESTA;
+		respuesta.pid = getpid();
+		mensajes.push_back(respuesta);
 	}
 	return mensajes;
 }
 
-void Servidor :: consultarLaBase(Registro registro){
-
-	vector<Registro> resultado = this->bd.consultar(registro);
-	this->respuesta = this->getMensajesFromRegisters(resultado);
-
+void Servidor::consultarRegistros() {
+	Registro registroDeConsulta;
+	registroDeConsulta.crearDesdeMensaje(peticionRecibida);
+	vector<Registro> resultados = this->bd.consultar(registroDeConsulta, peticionRecibida.op);
+	this->respuestas = this->getMensajesDeRespuestaConsulta(resultados);
 }
 
-mensaje Servidor :: getPeticionRecibida () {
+mensaje Servidor::getPeticionRecibida() {
 	return this->peticionRecibida;
 }
 
-vector<mensaje> Servidor :: getRespuesta () {
-	return this->respuesta;
+vector<mensaje> Servidor::getRespuesta() {
+	return this->respuestas;
 }
 
-mensaje Servidor :: getMensaje(int id){
+mensaje Servidor::getMensaje(int id) {
 	mensaje a;
 	return a;
 }
 
-void Servidor ::iniciar(){
-//	SIGINT_Handler sigint_handler;
-//	SignalHandler :: getInstance()->registrarHandler( SIGINT, &sigint_handler );
-//	while (sigint_handler.getGracefulQuit() == 0) {
-	//FIXME crear un handler para sigint y asi salir del servidor limpiamente con Ctrl+C
-	for ( int i=0;i<10;i++ ) {
-		cout << "Servidor: esperando peticiones" << endl;
-		recibirPeticion ();
-		cout << "Servidor: peticion recibida: " << endl;
-		procesarPeticion ();
-
-		//datos.push_back(getPeticionRecibida());
-		cout << "Servidor: peticion procesada - enviando respuesta: " << endl;
-		responderPeticion (getPeticionRecibida().pid);
-		cout << "Servidor: respuesta enviada" << endl;
+void Servidor::iniciar() {
+	SIGINT_Handler sigint_handler(this->cola);
+	SignalHandler::getInstance()->registrarHandler( SIGINT, &sigint_handler );
+	while (sigint_handler.getGracefulQuit() == 0) {
+		cout << "Esperando peticiones." << endl;
+		recibirPeticion();
+		procesarPeticion();
+		responderPeticion(getPeticionRecibida().pid);
 	}
+	cout << "El servidor ha dejado de recibir peticiones." << endl;
 }
 

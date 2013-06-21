@@ -24,10 +24,11 @@ private:
 	bool esComandoAyuda(const string& c);
 	bool esComandoSalir(const string& c);
 	int enviarPeticion(mensaje);
-	mensaje recibirEntrada();
+	mensaje leerEntrada();
+    void recibirRespuesta();
 public:
 	Cliente(char* archivo, char letra);
-	void iniciarComunicacion();
+	void iniciar();
 	void setSalir(bool salir);
 	bool salir();
 	virtual ~Cliente();
