@@ -82,56 +82,56 @@ long Protocolo::getMType(const string& cmd) {
 	return mtype;
 }
 
-void Protocolo::parsearMensajeInsertar(mensaje & peticion) {
-	string nombre, telefono, direccion, operacion;
-    vector<string>::const_iterator itNom, itTel, itDir, itOp;
-    itNom = find(this->entrada.begin(), this->entrada.end(), "-n");
-    itTel = find(this->entrada.begin(), this->entrada.end(), "-t");
-    itDir = find(this->entrada.begin(), this->entrada.end(), "-d");
-    itOp = find(this->entrada.begin(), this->entrada.end(), "-o");
-    nombre = (itNom != this->entrada.end()) ? *(itNom + 1) : "";
-    telefono = (itTel != this->entrada.end()) ? *(itTel + 1) : "";
-    direccion = (itDir != this->entrada.end()) ? *(itDir + 1) : "";
-    operacion = (itOp != this->entrada.end()) ? *(itOp + 1) : "";
-    strcpy(peticion.nombre, nombre.c_str());
-    strcpy(peticion.telefono, telefono.c_str());
-    strcpy(peticion.direccion, direccion.c_str());
-    peticion.op = getOp(operacion);
-}
-
-void Protocolo::parsearMensajeConsultar(mensaje & peticion) {
-	string nombre, telefono, direccion, operacion;
-    vector<string>::const_iterator itNom, itTel, itDir, itOp;
-    itNom = find(this->entrada.begin(), this->entrada.end(), "-n");
-    itTel = find(this->entrada.begin(), this->entrada.end(), "-t");
-    itDir = find(this->entrada.begin(), this->entrada.end(), "-d");
-    itOp = find(this->entrada.begin(), this->entrada.end(), "-o");
-    nombre = (itNom != this->entrada.end()) ? *(itNom + 1) : "";
-    telefono = (itTel != this->entrada.end()) ? *(itTel + 1) : "";
-    direccion = (itDir != this->entrada.end()) ? *(itDir + 1) : "";
-    operacion = (itOp != this->entrada.end()) ? *(itOp + 1) : "";
-    strcpy(peticion.nombre, nombre.c_str());
-    strcpy(peticion.telefono, telefono.c_str());
-    strcpy(peticion.direccion, direccion.c_str());
-    peticion.op = getOp(operacion);
-}
-
-mensaje Protocolo::getMensajePeticion() {
-	mensaje peticion;
+void Protocolo::parsearEntrada(mensaje & peticion) {
+	peticion.mtype = this->getMType(entrada[0]);
 	peticion.mtype = this->getMType(this->entrada[0]);
 	peticion.pid = getpid();
+	memset(peticion.nombre, 0, NOMBRE_SIZE);
+	memset(peticion.direccion, 0, DIRECCION_SIZE);
+	memset(peticion.telefono, 0, TELEFONO_SIZE);
+	for (int i = 1; i < (int)entrada.size(); i++) {
+		if(entrada[i].compare("-n")==0){
+			unsigned int j=i;
+			string nombre = "";
+			while(j<entrada.size()-1){
+				if(entrada[j+1].compare("-t")==0 || entrada[j+1].compare("-d")==0){
+					break;
+				}
+				nombre+=entrada[j+1]+SEPARADOR;
+				j++;
+			}
 
-	if (esMensajeInsertar(peticion)){
-		parsearMensajeInsertar(peticion);
-	} else if (esMensajeConsultar(peticion)){
-		parsearMensajeConsultar(peticion);
+			strcpy(peticion.nombre,nombre.c_str());
+		}
+		if(entrada[i].compare("-d")==0){
+			unsigned int j=i;
+			string direccion = "";
+			while(j<entrada.size()-1){
+				if(entrada[j+1].compare("-t")==0 || entrada[j+1].compare("-n")==0){
+					break;
+				}
+				direccion+=entrada[j+1]+SEPARADOR;
+				j++;
+			}
+			strcpy(peticion.direccion,direccion.c_str());
+		}
+		if(entrada[i].compare("-t")==0){
+			unsigned int j=i;
+			string telefono = "";
+			while(j<entrada.size()-1){
+				if(entrada[j+1].compare("-n")==0 || entrada[j+1].compare("-d")==0){
+					break;
+				}
+				telefono+=entrada[j+1]+SEPARADOR;
+				j++;
+			}
+			strcpy(peticion.telefono,telefono.c_str());
+		}
 	}
-
-	cout << "nombre " << peticion.nombre << endl;
-	cout << "dir " << peticion.direccion << endl;
-	cout << "tel " << peticion.telefono << endl;
-	cout << "op " << peticion.op << endl;
-
+}
+mensaje Protocolo::getMensajePeticion() {
+	mensaje peticion;
+	parsearEntrada(peticion);
 	return peticion;
 }
 

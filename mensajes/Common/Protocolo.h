@@ -31,8 +31,7 @@ public:
 	virtual ~Protocolo();
 private:
 	vector<string> entrada;
-    void parsearMensajeInsertar(mensaje & peticion);
-    void parsearMensajeConsultar(mensaje & peticion);
+    void parsearEntrada(mensaje & peticion);
 	long getMType(const string& cmd);
 	int getOp(const string& op);
 	bool esComandoInsertar(const string& c);
