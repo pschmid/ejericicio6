@@ -79,7 +79,7 @@ int BaseDeDatos::modificar(const Registro& exist, const Registro& modif){
 		return ERR_NO_EXISTE;
 	}
 	vector<Registro>::iterator it = currrentPosition;
-	if (this->existente(modif)){
+	if (this->existente(modif) && !exist.compararPorNombre(modif)){
 		return ERR_DUPLICADO;
 	}
 	if (this->datosRequeridos(modif)){
@@ -87,8 +87,11 @@ int BaseDeDatos::modificar(const Registro& exist, const Registro& modif){
 	}
 
 	/* Modificar en cache */
-	this->bufferRegistros.insert(it, modif);
-	this->bufferRegistros.erase(it+1);
+	it = this->bufferRegistros.insert(it, modif);
+	if ((it+1) != this->bufferRegistros.end()){
+		this->bufferRegistros.erase(it+1);
+	}
+	currrentPosition = it;
 
 	/* Modificar en el archivo */
 	t_registro reg = modif.getRegistroASerializar();
@@ -96,13 +99,13 @@ int BaseDeDatos::modificar(const Registro& exist, const Registro& modif){
 	Registro busq;
 	bool encontrado = false;
 	fstream bdfile;
-	bdfile.open (ARCHIVO_BASE, ios_base::out | ios_base::binary);
+	bdfile.open (ARCHIVO_BASE, ios_base::out | ios_base::in | ios_base::binary);
 	while(!bdfile.eof() && !encontrado){
 		bdfile.read((char*)&rbusq, Registro::getSize());
 		busq.crearDesdeRegistro(rbusq);
-		if (exist.compararDuplicado(busq)){
-			cout << bdfile.seekp(- Registro::getSize(), ios_base::cur) << endl ;
-			cout << bdfile.write((char*)&reg, Registro::getSize()) << endl;
+		if (exist.compararPorNombre(busq)){
+			bdfile.seekp(- Registro::getSize(), ios_base::cur);
+			bdfile.write((char*)&reg, Registro::getSize());
 			encontrado = true;
 		}
 	}

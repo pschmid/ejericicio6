@@ -38,6 +38,7 @@ public:
     string getNombre() const;
     string getTelefono() const;
     bool vacio() const;
+    bool compararPorNombre(const Registro& r2) const;
     bool compararDuplicado(const Registro& r2) const;
     bool compararBusqueda(const Registro& r2, int op) const;
 	virtual ~Registro();

@@ -72,18 +72,25 @@ long Protocolo::getMType(const string& cmd) {
 	long mtype = 0;
 	if (esComandoInsertar(cmd)) {
 		mtype = INSERTAR;
-		cout << "Enviando petición de insertar." << endl;
 	} else if (esComandoConsultar(cmd)) {
 		mtype = CONSULTAR;
-		cout << "Enviando petición de consultar registros." << endl;
 	} else if (esComandoBorrar(cmd)){
 		mtype = ELIMINAR;
-		cout << "Borrar:" << endl;
 	} else if (esComandoModificar(cmd)){
 		mtype = MODIFICAR;
-		cout << "Modificar:" << endl;
 	}
 	return mtype;
+}
+
+void Protocolo::parsearEntradaConsultar(mensaje & peticion) {
+	parsearEntrada(peticion);
+}
+
+void Protocolo::parsearEntradaInsertar(mensaje & peticion) {
+	parsearEntrada(peticion);
+}
+
+void Protocolo::parsearEntradaModificar(mensaje & peticion) {
 }
 
 void Protocolo::parsearEntrada(mensaje & peticion) {
@@ -133,9 +140,19 @@ void Protocolo::parsearEntrada(mensaje & peticion) {
 		}
 	}
 }
+
 mensaje Protocolo::getMensajePeticion() {
 	mensaje peticion;
-	parsearEntrada(peticion);
+	if (esComandoInsertar(entrada[0])){
+		cout << "Enviando petición de insertar registro." << endl;
+		parsearEntradaInsertar(peticion);
+	} else if(esComandoConsultar(entrada[0])){
+		cout << "Enviando petición de consultar registros." << endl;
+		parsearEntradaConsultar(peticion);
+	} else if (esComandoModificar(entrada[0])){
+		cout << "Enviando petición de modificar registro." << endl;
+		parsearEntradaModificar(peticion);
+	}
 	return peticion;
 }
 

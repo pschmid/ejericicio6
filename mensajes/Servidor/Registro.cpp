@@ -68,7 +68,12 @@ bool Registro::vacio() const{
 			this->getDireccion().empty() &&
 			this->getTelefono().empty();
 }
+
 bool Registro::compararDuplicado(const Registro& r2) const{
+	return this->compararPorNombre(r2);
+}
+
+bool Registro::compararPorNombre(const Registro& r2) const{
 	string lowernom = Util::toLower(this->getNombre());
 	return lowernom.compare(Util::toLower(r2.getNombre())) == 0;
 }

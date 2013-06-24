@@ -5,14 +5,13 @@
 #include <iostream>
 #include <string>
 #include <sstream>
+#include <sys/wait.h>
 #include <unistd.h>
 #include "../Common/Mensaje.h"
 #include "../Common/Protocolo.h"
 #include "../Common/Cola.h"
 #include "../Common/Util.h"
 #include "../Common/Constants.h"
-#include "../Common/MensajeFactory.h"
-#include "../Common/Signals/SIGINT_Client_Handler.h"
 #include "../Common/Signals/SignalHandler.h"
 
 using namespace std;
@@ -32,6 +31,7 @@ private:
 public:
 	Cliente(char* archivo, char letra);
 	void iniciar();
+	void informarCierre();
 	void setSalir(bool salir);
 	bool salir();
 	virtual ~Cliente();

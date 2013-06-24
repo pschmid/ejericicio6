@@ -1,15 +1,13 @@
 #ifndef SIGINT_HANDLER_H_
 #define SIGINT_HANDLER_H_
 
-#include <signal.h>
-#include <assert.h>
-#include <stdlib.h>
 #include "../Constants.h"
 #include "../Util.h"
 #include "../Mensaje.h"
+#include <signal.h>
+#include <assert.h>
 #include <sys/wait.h>
-#include <string>
-#include <iostream>
+#include <string.h>
 #include <map>
 
 using namespace std;
@@ -39,21 +37,18 @@ class SIGINT_Handler : public EventHandler {
 			cout << endl << "Cerrando servidor..." << endl;
 			this->gracefulQuit = 1;
 			this->cola->destruir();
-			// Mando señal a cada cliente
 
+			cout<<"Informando a clientes..."<<endl;
 			// Responder
 			mensaje respuesta;
 			respuesta.mtype = EXIT;
+			strcpy(respuesta.textoRespuesta, "La comunicacion con el servidor se cerró. Para finalizar ingrese 'salir' o 'S'.");
 			respuesta.ttl = 1;
-			int resultado;
 			for (map<int, Cola<mensaje> *>::iterator ii = clientes->begin() ;ii!= clientes->end(); ii++) {
 				(*ii).second->escribir(respuesta);
 			}
-
-			cout<<"fin señales a clientes"<<endl;
 			return 0;
 		}
-
 
 		sig_atomic_t getGracefulQuit () {
 			return this->gracefulQuit;

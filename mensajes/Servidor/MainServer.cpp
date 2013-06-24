@@ -13,8 +13,6 @@
 #include <sys/wait.h>
 #include "Servidor.h"
 
-#define CANTIDAD_INTERCAMBIOS	3
-
 using namespace std;
 
 void imprimirModoDeUso(){
@@ -26,6 +24,13 @@ string result(int r){
 	return (r == SUCCESS)? "Insertado.": (r == ERR_DUPLICADO)? "Duplicado." : "Faltan campos";
 }
 
+void mostrarRegistros(vector<Registro>* regs){
+	cout << endl;
+	vector<Registro>::iterator it;
+	for (it = regs->begin(); it != regs->end(); it++){
+		cout << it->getNombre() << " | " << it->getDireccion() << " | " << it->getTelefono() << endl;
+	}
+}
 
 int main(int argc, char* argv[] ) {
 	Servidor servidor ( (char *) COLA_SERVIDOR,'a' );
@@ -37,40 +42,47 @@ int main(int argc, char* argv[] ) {
 //	memset(nombre, 0, NOMBRE_SIZE);
 //	//strcpy(nombre,"Raul");
 //	strcpy(dire,"lala");
-//	strcpy(tel, "3214");
+//	strcpy(tel, "41111111");
 //	Registro r1(nombre, dire, tel);
 //
-//	strcpy(nombre,"Pepe");
-//	strcpy(dire,"sad");
-//	strcpy(tel, "123");
+//	strcpy(nombre,"Lauro");
+//	strcpy(dire,"Calle Falsa 1234");
+//	strcpy(tel, "42222222");
 //	Registro r2(nombre, dire, tel);
 //
-//	strcpy(nombre,"Pepe");
-//	strcpy(dire,"sadsada");
-//	strcpy(tel, "5462");
+//	strcpy(nombre,"Jorge");
+//	strcpy(dire,"Calle Falsa 2345");
+//	strcpy(tel, "43333333");
 //	Registro r3(nombre, dire, tel);
 //
-//	strcpy(nombre,"Pepe");
-//	strcpy(dire,"lalal");
-//	strcpy(tel, "12358");
+//	strcpy(nombre,"Gonza");
+//	strcpy(dire,"Calle Falsa 3456");
+//	strcpy(tel, "44444444");
 //	Registro r4(nombre, dire, tel);
 //
 //	BaseDeDatos bd;
 //	cout << "Intentando insertar a: " << r1.getNombre() << ". Resultado: " << result(bd.insertar(r1)) << endl;
 //	cout << "Intentando insertar a: " << r2.getNombre() << ". Resultado: " << result(bd.insertar(r2)) << endl;
-//	cout << "Intentando insertar a: " << r2.getNombre() << ". Resultado: " << result(bd.insertar(r3)) << endl;
-//	cout << "Intentando insertar a: " << r2.getNombre() << ". Resultado: " << result(bd.insertar(r4)) << endl;
+//	cout << "Intentando insertar a: " << r3.getNombre() << ". Resultado: " << result(bd.insertar(r3)) << endl;
+//	cout << "Intentando insertar a: " << r4.getNombre() << ". Resultado: " << result(bd.insertar(r4)) << endl;
 //
 //	strcpy(nombre,"pe");
 //	strcpy(dire,"lala");
 //	strcpy(tel, "");
 //	Registro aBuscar(nombre, dire, tel);
 //
-//	vector<Registro> regs = bd.consultar(aBuscar, COMP_OR);
-//	vector<Registro>::iterator it;
-//	for (it = regs.begin(); it != regs.end(); it++){
-//		cout << it->getNombre() << " " << it->getDireccion() << " " << it->getTelefono() << endl;
-//	}
+////	vector<Registro> regs = bd.consultar(aBuscar, COMP_OR);
+////	mostrarRegistros(regs);
+//
+//	mostrarRegistros(&bd.bufferRegistros);
+//
+//	strcpy(nombre,"Jorge Lanata3");
+//	strcpy(dire,"Calle laaallalalaal");
+//	strcpy(tel, "44444441");
+//	Registro nuevo(nombre, dire, tel);
+//	bd.modificar(r3, nuevo);
+//
+//	mostrarRegistros(&bd.bufferRegistros);
 
 	return 0;
 }

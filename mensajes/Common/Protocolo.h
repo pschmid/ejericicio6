@@ -33,6 +33,9 @@ public:
 private:
 	vector<string> entrada;
     void parsearEntrada(mensaje & peticion);
+    void parsearEntradaInsertar(mensaje & peticion);
+    void parsearEntradaConsultar(mensaje & peticion);
+    void parsearEntradaModificar(mensaje & peticion);
 	long getMType(const string& cmd);
 	int getOp(const string& op);
 	bool esComandoInsertar(const string& c);

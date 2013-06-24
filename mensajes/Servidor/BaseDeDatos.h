@@ -42,9 +42,8 @@ public:
 
 	/* Vuelca el buffer a disco. */
 	virtual ~BaseDeDatos();
-
-	vector<Registro> bufferRegistros;
 private:
+	vector<Registro> bufferRegistros;
 	vector<Registro>::iterator currrentPosition;
 	bool existente(const Registro& r);
 	bool datosRequeridos(const Registro& r);

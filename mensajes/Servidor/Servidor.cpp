@@ -62,8 +62,7 @@ int Servidor::procesarPeticion() {
 		clientes[pidCliente] = nuevoCliente;
 		this->respuestas = this->responderAcaEstoy();
 	}else{
-
-
+		//FIXME Responder algún error
 	}
 
 	return clientPid;
@@ -80,9 +79,7 @@ vector<mensaje> Servidor::responderAcaEstoy(){
 		respuesta.pid = getpid();
 		strcpy(respuesta.textoRespuesta, resp.c_str());
 		mensajes.push_back(respuesta);
-
 		return mensajes;
-
 }
 
 int Servidor::responderPeticion(int pidCliente) {
