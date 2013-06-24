@@ -42,7 +42,7 @@ t_registro Registro::getRegistroASerializar() const{
 	return registro;
 }
 
-int Registro::getSize() const{
+int Registro::getSize(){
 	return sizeof(t_registro);
 }
 
@@ -63,7 +63,11 @@ string Registro::getTelefono() const
 	string t(registro.telefono);
 	return t;
 }
-
+bool Registro::vacio() const{
+	return this->getNombre().empty() &&
+			this->getDireccion().empty() &&
+			this->getTelefono().empty();
+}
 bool Registro::compararDuplicado(const Registro& r2) const{
 	string lowernom = Util::toLower(this->getNombre());
 	return lowernom.compare(Util::toLower(r2.getNombre())) == 0;
@@ -71,6 +75,10 @@ bool Registro::compararDuplicado(const Registro& r2) const{
 
 bool Registro::compararBusqueda(const Registro& r2, int op) const{
 	bool foundNom = false, foundDir = false, foundTel = false;
+	if(r2.vacio()){
+		return true;
+	}
+
 	if (!r2.getNombre().empty()){
 		string lowernom = Util::toLower(this->getNombre());
 		foundNom = (lowernom.find(Util::toLower(r2.getNombre())) != string::npos);

@@ -29,14 +29,15 @@ private:
 public:
 	Registro();
 	Registro(char nombre[NOMBRE_SIZE], char direccion[DIRECCION_SIZE], char telefono[TELEFONO_SIZE]);
+	static int getSize();
 	void crearDesdeMensaje(mensaje m);
 	void crearDesdeRegistro(t_registro r);
 	mensaje crearMensajeAsociado();
 	t_registro getRegistroASerializar() const;
-	int getSize() const;
 	string getDireccion() const;
     string getNombre() const;
     string getTelefono() const;
+    bool vacio() const;
     bool compararDuplicado(const Registro& r2) const;
     bool compararBusqueda(const Registro& r2, int op) const;
 	virtual ~Registro();

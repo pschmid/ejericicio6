@@ -11,6 +11,7 @@
 #define ARCHIVO_BASE "basededatos.bin"
 #define ERR_DUPLICADO 1
 #define ERR_CAMPO_REQUERIDO 2
+#define ERR_NO_EXISTE 3
 #define SUCCESS 0
 
 #include <vector>
@@ -22,19 +23,37 @@ using namespace std;
 
 class BaseDeDatos {
 public:
+	/* Crea la base de datos, si no existe. Si existe
+	 * llena el buffer desde el disco. */
 	BaseDeDatos();
+
+	/* Inserta un nuevo registro @r en la base de datos.
+	 * Si está duplicado devuelve ERR_DUPLICADO
+	 * Si faltan datos devuelve ERR_DATOS_FALTANTES */
 	int insertar(const Registro& r);
-	int borrar(const Registro& r);
-	int modificar(const Registro& r);
+
+	/* Busca el registro @exist, si lo encuentra inserta en su lugar el valor de @modif.
+	 * Si no lo encuentra devuelve ERR_NO_EXISTE
+	 * Si faltan datos en @modif devuelve ERR_DATOS_FALTANTES */
+	int modificar(const Registro& exist, const Registro& modif);
+
+	/* Devuelve un vector de registros coincidentes con la búsqueda */
 	vector<Registro> consultar(const Registro& aBuscar, int op);
-    void cargarBaseDesdeArchivo();
+
+	/* Vuelca el buffer a disco. */
 	virtual ~BaseDeDatos();
+
+	vector<Registro> bufferRegistros;
 private:
-	vector<Registro> registros;
-	bool duplicado(const Registro& r);
+	vector<Registro>::iterator currrentPosition;
+	bool existente(const Registro& r);
 	bool datosRequeridos(const Registro& r);
+	bool bufferLleno();
+    void cargarBufferDesdeArchivo();
+    void volcarBufferAlArchivo();
 };
 
+/* Predicates de comparación */
 struct CompadorBusqueda {
     Registro aBuscar;
     int operacion;
