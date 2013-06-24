@@ -10,6 +10,8 @@
 #define	MODIFICAR	3
 #define CONSULTAR	4
 #define	RESPUESTA	5
+#define EXIT		6
+#define ACA_ESTOY    7
 #define SALIR		-1
 #define NOMBRE_SIZE	61
 #define DIRECCION_SIZE 120

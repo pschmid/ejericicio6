@@ -24,6 +24,7 @@ public:
 	Protocolo();
 	bool validarEntrada(const string& s);
 	bool esMensajeInsertar(mensaje m);
+	bool esMensajeAcaEstoy(mensaje m);
 	bool esMensajeConsultar(mensaje m);
 	bool esMensajeRespuesta(mensaje m);
 	mensaje getMensajePeticion();

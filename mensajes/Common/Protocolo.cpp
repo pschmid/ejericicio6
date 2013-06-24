@@ -22,6 +22,10 @@ bool Protocolo::esMensajeRespuesta(mensaje m) {
 	return m.mtype == RESPUESTA;
 }
 
+bool Protocolo::esMensajeAcaEstoy(mensaje m) {
+	return m.mtype == ACA_ESTOY;
+}
+
 bool Protocolo::esComandoInsertar(const string& c) {
 	return c.compare("insertar") == 0 || c.compare("I") == 0;
 }

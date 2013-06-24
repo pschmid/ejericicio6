@@ -10,6 +10,7 @@
 #include <sys/wait.h>
 #include <string>
 #include <iostream>
+#include <map>
 
 using namespace std;
 
@@ -21,9 +22,11 @@ class SIGINT_Handler : public EventHandler {
 	private:
 		sig_atomic_t gracefulQuit;
 		Cola<mensaje>* cola;
+		map<int, Cola<mensaje>*> *clientes;
 	public:
 
-		SIGINT_Handler (Cola<mensaje>* cola) {
+		SIGINT_Handler (Cola<mensaje>* cola,map<int, Cola<mensaje>*> *clientes) {
+			this->clientes = clientes;
 			this->cola = cola;
 			this->gracefulQuit = 0;
 		}
@@ -36,8 +39,21 @@ class SIGINT_Handler : public EventHandler {
 			cout << endl << "Cerrando servidor..." << endl;
 			this->gracefulQuit = 1;
 			this->cola->destruir();
+			// Mando señal a cada cliente
+
+			// Responder
+			mensaje respuesta;
+			respuesta.mtype = EXIT;
+			respuesta.ttl = 1;
+			int resultado;
+			for (map<int, Cola<mensaje> *>::iterator ii = clientes->begin() ;ii!= clientes->end(); ii++) {
+				(*ii).second->escribir(respuesta);
+			}
+
+			cout<<"fin señales a clientes"<<endl;
 			return 0;
 		}
+
 
 		sig_atomic_t getGracefulQuit () {
 			return this->gracefulQuit;

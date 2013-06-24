@@ -54,11 +54,35 @@ int Servidor::procesarPeticion() {
 	} else if (protocolo.esMensajeConsultar(peticionRecibida)) {
 		cout << "Procesando consultar registros." << endl;
 		this->consultarRegistros();
-	} else {
-		// FIXME devolver error
+	} else if (protocolo.esMensajeAcaEstoy(peticionRecibida)){
+		//nuevo cliente
+		Cola<mensaje> *nuevoCliente;
+		int pidCliente = peticionRecibida.pid;
+		nuevoCliente = new Cola<mensaje> ((char *) COLA_CLIENTE, pidCliente);
+		clientes[pidCliente] = nuevoCliente;
+		this->respuestas = this->responderAcaEstoy();
+	}else{
+
+
 	}
 
 	return clientPid;
+}
+
+vector<mensaje> Servidor::responderAcaEstoy(){
+		mensaje respuesta;
+		vector<mensaje> mensajes;
+		string resp;
+		int ttl = 1;
+		resp = "Aca estoy recibido.\n";
+		respuesta.mtype = RESPUESTA;
+		respuesta.ttl = ttl;
+		respuesta.pid = getpid();
+		strcpy(respuesta.textoRespuesta, resp.c_str());
+		mensajes.push_back(respuesta);
+
+		return mensajes;
+
 }
 
 int Servidor::responderPeticion(int pidCliente) {
@@ -134,7 +158,7 @@ mensaje Servidor::getMensaje(int id) {
 }
 
 void Servidor::iniciar() {
-	SIGINT_Handler sigint_handler(this->cola);
+	SIGINT_Handler sigint_handler(this->cola,&this->clientes);
 	SignalHandler::getInstance()->registrarHandler( SIGINT, &sigint_handler );
 	while (sigint_handler.getGracefulQuit() == 0) {
 		cout << "Esperando peticiones." << endl;

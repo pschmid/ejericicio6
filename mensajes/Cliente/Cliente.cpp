@@ -3,6 +3,14 @@
 Cliente::Cliente(char* archivo, char letra) {
 	this->colaEnvios = new Cola<mensaje> (archivo, letra);
 	this->colaRecibos = new Cola<mensaje> ((char *) COLA_CLIENTE, getpid());
+	this->_salir = false;
+	mensaje acaEstoy;
+	acaEstoy.mtype = ACA_ESTOY;
+	acaEstoy.pid = getpid();
+	acaEstoy.ttl =1;
+	this->colaEnvios->escribir(acaEstoy);
+	this->recibirRespuesta();
+
 }
 
 Cliente::~Cliente() {
@@ -12,18 +20,56 @@ Cliente::~Cliente() {
 }
 
 void Cliente::iniciar() {
+//	SIGINT_Client_Handler sigint_client_handler(this->colaRecibos);
+//	SignalHandler::getInstance()->registrarHandler(SIGINT, &sigint_client_handler );
+	int salida = 0;
+	pid_t pid = fork ();
+
+
+	if ( pid == 0 ) {
+		this->chequearFinComunicacion();
+		exit ( 0 );
+	}else{
+
 	cout << "Bienvenido al gestor de Base de Datos v1.0" << endl << endl;
 	cout << "Ingrese el comando deseado por favor (help para ayuda)." << endl;
 	mensaje peticion = this->leerEntrada();
 	while (!this->salir()) {
-		this->enviarPeticion(peticion);
-		this->recibirRespuesta();
-		peticion = this->leerEntrada();
+			this->enviarPeticion(peticion);
+			this->recibirRespuesta();
+			peticion = this->leerEntrada();
+	}
+	cout<<"termino cliente"<<endl;
+	int estado;
+	wait ( (void*) &estado );
 	}
 }
 
+
+
+
+
+
+
+
 bool Cliente::esComandoSalir(const string& c) {
 	return c.compare("salir") == 0 || c.compare("S") == 0;
+}
+
+bool Cliente::chequearFinComunicacion(){
+
+	mensaje respuesta;
+	Protocolo protocolo;
+	bool quedanMensajes = true;
+    while(quedanMensajes){
+		this->colaRecibos->leer(EXIT, &respuesta);
+		cout << "La comunicacion con el servidor se cerró" << endl;
+		cout << "para finalizar ingrese 'salir'" << endl;
+		quedanMensajes = ( respuesta.ttl > 1 );
+	}
+
+    return true;
+
 }
 
 bool Cliente::esComandoAyuda(const string& c) {
@@ -55,14 +101,27 @@ mensaje Cliente::leerEntrada() {
 	do {
 		cout << "> ";
 		getline(cin, entrada);
+
 		if (esComandoAyuda(entrada)) {
 			this->imprimirAyuda();
 		}
 		val = protocolo.validarEntrada(entrada);
 		sal = esComandoSalir(entrada);
+		if(this->_salir==true)
+			sal=true;
+		cout<<"salir = "<< this->salir()<<endl;
+
 	} while (!val && !sal);
 
-	if (esComandoSalir(entrada)) {
+	if (esComandoSalir(entrada) || this->_salir==true) {
+		if(esComandoSalir(entrada)){
+			// Responder mensaje de cierre dummy
+			mensaje respuesta;
+			respuesta.mtype = EXIT;
+			respuesta.ttl = 1;
+			this->colaRecibos->escribir(respuesta);
+		}
+
 		this->setSalir(true);
 		mensaje nulo;
 		return nulo;

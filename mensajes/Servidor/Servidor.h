@@ -31,6 +31,7 @@ class Servidor {
 		BaseDeDatos bd;
 		map<int, Cola<mensaje>*> clientes;
 		vector<mensaje> getMensajesDeRespuestaConsulta(vector<Registro> registros);
+		vector<mensaje> responderAcaEstoy();
 		void consultarRegistros();
 		void insertarRegistro();
 
