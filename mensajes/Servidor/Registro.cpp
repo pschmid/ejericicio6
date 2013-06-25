@@ -83,7 +83,6 @@ bool Registro::compararBusqueda(const Registro& r2, int op) const{
 	if(r2.vacio()){
 		return true;
 	}
-
 	if (!r2.getNombre().empty()){
 		string lowernom = Util::toLower(this->getNombre());
 		foundNom = (lowernom.find(Util::toLower(r2.getNombre())) != string::npos);
@@ -100,6 +99,8 @@ bool Registro::compararBusqueda(const Registro& r2, int op) const{
 
 	if (!r2.getTelefono().empty()){
 		foundTel = (this->getTelefono().find(r2.getTelefono()) != string::npos);
+	} else if (op == COMP_AND){
+		foundTel = true;
 	}
 
 	if (op == COMP_AND){
@@ -109,5 +110,16 @@ bool Registro::compararBusqueda(const Registro& r2, int op) const{
 	}
 }
 
+void Registro::llenarVacios(const Registro& reg){
+	if (this->getNombre().empty()){
+		strcpy(registro.nombre, reg.getNombre().c_str());
+	}
+	if (this->getDireccion().empty()){
+		strcpy(registro.direccion, reg.getDireccion().c_str());
+	}
+	if (this->getTelefono().empty()){
+		strcpy(registro.telefono, reg.getTelefono().c_str());
+	}
+}
 Registro::~Registro() {
 }

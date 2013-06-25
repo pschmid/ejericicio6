@@ -82,19 +82,22 @@ int BaseDeDatos::modificar(const Registro& exist, const Registro& modif){
 	if (this->existente(modif) && !exist.compararPorNombre(modif)){
 		return ERR_DUPLICADO;
 	}
-	if (this->datosRequeridos(modif)){
-		return ERR_CAMPO_REQUERIDO;
-	}
+
+	Registro nuevo = modif;
+	nuevo.llenarVacios(*it);
+
+	cout << modif.getNombre() << " | " << modif.getDireccion() << " | " << modif.getTelefono() << endl;
+	cout << nuevo.getNombre() << " | " << nuevo.getDireccion() << " | " << nuevo.getTelefono() << endl;
 
 	/* Modificar en cache */
-	it = this->bufferRegistros.insert(it, modif);
+	it = this->bufferRegistros.insert(it, nuevo);
 	if ((it+1) != this->bufferRegistros.end()){
 		this->bufferRegistros.erase(it+1);
 	}
 	currrentPosition = it;
 
 	/* Modificar en el archivo */
-	t_registro reg = modif.getRegistroASerializar();
+	t_registro reg = nuevo.getRegistroASerializar();
 	t_registro rbusq;
 	Registro busq;
 	bool encontrado = false;

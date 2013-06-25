@@ -37,6 +37,7 @@ public:
 	string getDireccion() const;
     string getNombre() const;
     string getTelefono() const;
+    void llenarVacios(const Registro& reg);
     bool vacio() const;
     bool compararPorNombre(const Registro& r2) const;
     bool compararDuplicado(const Registro& r2) const;

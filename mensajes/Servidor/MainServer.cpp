@@ -26,6 +26,9 @@ string result(int r){
 
 void mostrarRegistros(vector<Registro>* regs){
 	cout << endl;
+	if (regs->empty()){
+		cout << "No hay nada para mostrar." << endl;
+	}
 	vector<Registro>::iterator it;
 	for (it = regs->begin(); it != regs->end(); it++){
 		cout << it->getNombre() << " | " << it->getDireccion() << " | " << it->getTelefono() << endl;
@@ -66,14 +69,13 @@ int main(int argc, char* argv[] ) {
 //	cout << "Intentando insertar a: " << r3.getNombre() << ". Resultado: " << result(bd.insertar(r3)) << endl;
 //	cout << "Intentando insertar a: " << r4.getNombre() << ". Resultado: " << result(bd.insertar(r4)) << endl;
 //
-//	strcpy(nombre,"pe");
-//	strcpy(dire,"lala");
-//	strcpy(tel, "");
+//	strcpy(nombre,"gonza");
+//	strcpy(dire,"7");
+//	strcpy(tel, "4");
 //	Registro aBuscar(nombre, dire, tel);
-//
-////	vector<Registro> regs = bd.consultar(aBuscar, COMP_OR);
-////	mostrarRegistros(regs);
-//
+//	vector<Registro> regs = bd.consultar(aBuscar, COMP_AND);
+//	mostrarRegistros(&regs);
+
 //	mostrarRegistros(&bd.bufferRegistros);
 //
 //	strcpy(nombre,"Jorge Lanata3");

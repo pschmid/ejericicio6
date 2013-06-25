@@ -25,20 +25,19 @@ void Servidor::modificarRegistro() {
 	Registro existReg(peticionRecibida.nombreCons, (char*) "", (char*) "");
 	Registro nuevoReg;
 	nuevoReg.crearDesdeMensaje(peticionRecibida);
-
 	int result = this->bd.modificar(existReg, nuevoReg);
+
+	/* Generar mensaje de respuesta */
 	if (result == SUCCESS){
-		resp = "El registro ha sido insertado con éxito con la siguiente información.";
-		resp += "\nNombre: " + nuevoReg.getNombre();
-		resp += "\nDirección: " + nuevoReg.getDireccion();
-		resp += "\nTeléfono: " + nuevoReg.getTelefono();
+		resp = "El registro ha sido modificado con éxito con la siguiente información nueva.";
+		resp += (!nuevoReg.getNombre().empty()) ? "\nNombre: de " + existReg.getNombre() + " a " + nuevoReg.getNombre() : "";
+		resp += (!nuevoReg.getDireccion().empty()) ? "\nDirección: de " + existReg.getDireccion() + " a " +  nuevoReg.getDireccion() : "";
+		resp += (!nuevoReg.getTelefono().empty()) ? "\nTeléfono: de " + existReg.getTelefono() + " a " +  nuevoReg.getTelefono() : "";
 		resp += "\n";
 	} else if (result == ERR_NO_EXISTE){
 		resp = "El registro a modificar no existe. ";
 	} else if (result == ERR_DUPLICADO){
 		resp = "El registro no se ha modificado con éxito pues está en conflicto con otro existente.";
-	} else if (result == ERR_CAMPO_REQUERIDO){
-		resp = "El registro no se ha modificado con éxito pues faltan datos requeridos.";
 	}
 
 	/* Generar respuesta */
@@ -88,6 +87,7 @@ int Servidor::procesarPeticion() {
 		cout << "Procesando consultar registros." << endl;
 		this->consultarRegistros();
 	} else if (protocolo.esMensajeModificar(peticionRecibida)){
+		cout << "Procesando modificar registro." << endl;
 		this->modificarRegistro();
 	} else if (protocolo.esMensajeAcaEstoy(peticionRecibida)){
 		//nuevo cliente
@@ -146,7 +146,7 @@ vector<mensaje> Servidor::getMensajesDeRespuestaConsulta(vector<Registro> regist
 
 	/* Primer mensaje para mostrar */
 	if (!registros.empty()) {
-		resp = "Su consulta arrojó los siguientes (";
+		resp = "\nSu consulta arrojó los siguientes (";
 		resp += Util::itoa(registros.size());
 		resp += ") resultados:\n";
 	} else {
@@ -172,6 +172,8 @@ vector<mensaje> Servidor::getMensajesDeRespuestaConsulta(vector<Registro> regist
 void Servidor::consultarRegistros() {
 	Registro registroDeConsulta;
 	registroDeConsulta.crearDesdeMensaje(peticionRecibida);
+	cout << registroDeConsulta.getNombre() << " | " << registroDeConsulta.getDireccion() << " | " << registroDeConsulta.getTelefono() << endl;
+
 	vector<Registro> resultados = this->bd.consultar(registroDeConsulta, peticionRecibida.op);
 	this->respuestas = this->getMensajesDeRespuestaConsulta(resultados);
 }
