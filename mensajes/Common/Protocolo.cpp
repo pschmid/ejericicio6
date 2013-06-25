@@ -25,12 +25,12 @@ void setearNombreCons(mensaje& m, const string& val){
 
 Protocolo::Protocolo() {
 	this->params[0] = "-n";
-	this->actions[0] = setearNombre;
 	this->params[1] = "-d";
-	this->actions[1] = setearDire;
 	this->params[2] = "-t";
-	this->actions[2] = setearTel;
 	this->params[3] = "-m";
+	this->actions[0] = setearNombre;
+	this->actions[1] = setearDire;
+	this->actions[2] = setearTel;
 	this->actions[3] = setearNombreCons;
 }
 
