@@ -21,36 +21,27 @@ Cliente::~Cliente() {
 
 void Cliente::iniciar() {
 
-	MemoriaCompartida<bool> memoria;
-	memoria.crear ( (char*) "Cliente.cpp",'R' );
-	memoria.escribir(false);
 	pid_t pid = fork ();
 
 
 	if ( pid == 0 ) {
-		MemoriaCompartida<bool> memoria;
-		int estadoMemoria = memoria.crear ( (char*) "Cliente.cpp",'R' );
-		memoria.escribir(this->chequearFinComunicacion());
-		memoria.liberar();
+		this->chequearFinComunicacion();
 		exit ( 0 );
 	}else{
 
 	cout << "Bienvenido al gestor de Base de Datos v1.0" << endl << endl;
 	cout << "Ingrese el comando deseado por favor (help para ayuda)." << endl;
-	mensaje peticion = this->leerEntrada(&memoria);
-	this->setSalir(memoria.leer());
+	mensaje peticion = this->leerEntrada();
+
 	while (!this->salir()) {
 			this->enviarPeticion(peticion);
 			this->recibirRespuesta();
-			peticion = this->leerEntrada(&memoria);
-			this->setSalir(memoria.leer());
+			peticion = this->leerEntrada();
 	}
 
 	cout<<"fin aplicación cliente"<<endl;
 	int estado;
 	wait ( (void*) &estado );
-	memoria.liberar();
-
 	}
 }
 
@@ -92,7 +83,7 @@ bool Cliente::salir() {
 	return this->_salir;
 }
 
-mensaje Cliente::leerEntrada(MemoriaCompartida<bool> * memoria) {
+mensaje Cliente::leerEntrada() {
 
 	Protocolo protocolo;
 	string entrada = "";
@@ -106,8 +97,6 @@ mensaje Cliente::leerEntrada(MemoriaCompartida<bool> * memoria) {
 		}
 		val = protocolo.validarEntrada(entrada);
 		sal = esComandoSalir(entrada);
-		if(memoria->leer()==true)
-			sal=true;
 
 	} while (!val && !sal);
 

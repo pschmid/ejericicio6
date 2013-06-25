@@ -14,7 +14,6 @@
 #include "../Common/Util.h"
 #include "../Common/Constants.h"
 #include "../Common/Signals/SignalHandler.h"
-#include "../Common/MemoriaCompartida.h"
 
 using namespace std;
 
@@ -27,7 +26,7 @@ private:
 	bool esComandoAyuda(const string& c);
 	bool esComandoSalir(const string& c);
 	int enviarPeticion(mensaje);
-	mensaje leerEntrada(MemoriaCompartida<bool> * memoria);
+	mensaje leerEntrada();
     void recibirRespuesta();
     bool chequearFinComunicacion();
 public:
