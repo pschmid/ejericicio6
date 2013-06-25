@@ -10,17 +10,17 @@
 void setearNombre(mensaje& m, const string& val){
 	strcpy(m.nombre, val.c_str());
 }
-
 void setearDire(mensaje& m, const string& val){
 	strcpy(m.direccion, val.c_str());
 }
-
 void setearTel(mensaje& m, const string& val){
 	strcpy(m.telefono, val.c_str());
 }
-
 void setearNombreCons(mensaje& m, const string& val){
 	strcpy(m.nombreCons, val.c_str());
+}
+void setearOp(mensaje& m, const string& val){
+	m.op = Protocolo::getOp(val);
 }
 
 Protocolo::Protocolo() {
@@ -28,10 +28,12 @@ Protocolo::Protocolo() {
 	this->params[1] = "-d";
 	this->params[2] = "-t";
 	this->params[3] = "-m";
+	this->params[4] = "-o";
 	this->actions[0] = setearNombre;
 	this->actions[1] = setearDire;
 	this->actions[2] = setearTel;
 	this->actions[3] = setearNombreCons;
+	this->actions[4] = setearOp;
 }
 
 bool Protocolo::esMensajeInsertar(mensaje m) {
@@ -75,7 +77,10 @@ bool Protocolo::validarEntrada(const string& ent) {
 		return false;
 	}
 	this->entrada = Util::split(ent, SEPARADOR);
-	if (!esComandoInsertar(this->entrada[0]) && !esComandoConsultar(this->entrada[0]) && !esComandoModificar(entrada[0])) {
+	if (!esComandoInsertar(this->entrada[0]) &&
+		!esComandoConsultar(this->entrada[0]) &&
+		!esComandoModificar(entrada[0]))
+	{
 		return false;
 	}
 	return true;
@@ -147,7 +152,7 @@ mensaje Protocolo::getMensajePeticion() {
 				valor += entrada[j+1] + SEPARADOR;
 				j++;
 			}
-			completarCampo(peticion,pos,valor);
+			completarCampo(peticion,pos,Util::trim(valor));
 		}
 	}
 	return peticion;

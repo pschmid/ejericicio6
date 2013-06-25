@@ -45,3 +45,19 @@ string Util::toLower(string cadena){
 	}
 	return lowercase;
 }
+
+string Util::ltrim(const string &s) {
+	string trimmed(s);
+	trimmed.erase(trimmed.begin(), std::find_if(trimmed.begin(), trimmed.end(), std::not1(std::ptr_fun<int, int>(std::isspace))));
+	return trimmed;
+}
+
+string Util::rtrim(const string &s) {
+	string trimmed(s);
+	trimmed.erase(std::find_if(trimmed.rbegin(), trimmed.rend(), std::not1(std::ptr_fun<int, int>(std::isspace))).base(), trimmed.end());
+	return trimmed;
+}
+
+string Util::trim(const string &s) {
+	return ltrim(rtrim(s));
+}

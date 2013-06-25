@@ -17,7 +17,7 @@
 #include <map>
 #include <algorithm>
 
-#define CANT_PARAMS 4
+#define CANT_PARAMS 5
 
 using namespace std;
 
@@ -32,13 +32,13 @@ public:
 	bool esMensajeModificar(mensaje m);
 	mensaje getMensajePeticion();
 	mensaje getMensajeRespuesta();
+	static int getOp(const string& op);
 	virtual ~Protocolo();
 private:
 	vector<string> entrada;
 	string params[CANT_PARAMS];
 	void (*actions[CANT_PARAMS])(mensaje&, const string& val);
  	long getMType(const string& cmd);
-	int getOp(const string& op);
 	void inicializarPeticion(mensaje& peticion);
 	bool esComandoInsertar(const string& c);
 	bool esComandoConsultar(const string& c);
