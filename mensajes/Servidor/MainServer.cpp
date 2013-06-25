@@ -12,6 +12,7 @@
 #include <stdlib.h>
 #include <sys/wait.h>
 #include "Servidor.h"
+#include "../Common/Util.h"
 
 using namespace std;
 
@@ -40,7 +41,7 @@ int main(int argc, char* argv[] ) {
 	servidor.iniciar();
 	wait(NULL);
 
-//	/* Pruebas BD */
+	/* Pruebas BD */
 //	char nombre[NOMBRE_SIZE], dire[DIRECCION_SIZE], tel[TELEFONO_SIZE];
 //	memset(nombre, 0, NOMBRE_SIZE);
 //	//strcpy(nombre,"Raul");
@@ -69,8 +70,9 @@ int main(int argc, char* argv[] ) {
 //	cout << "Intentando insertar a: " << r3.getNombre() << ". Resultado: " << result(bd.insertar(r3)) << endl;
 //	cout << "Intentando insertar a: " << r4.getNombre() << ". Resultado: " << result(bd.insertar(r4)) << endl;
 //
-//	strcpy(nombre,"gonza");
-//	strcpy(dire,"7");
+//	string n = "gonza          ";
+//	strcpy(nombre, Util::trim(n).c_str());
+//	strcpy(dire,"");
 //	strcpy(tel, "4");
 //	Registro aBuscar(nombre, dire, tel);
 //	vector<Registro> regs = bd.consultar(aBuscar, COMP_AND);

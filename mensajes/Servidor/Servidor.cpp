@@ -137,7 +137,7 @@ int Servidor::responderPeticion(int pidCliente) {
 	return 0;
 }
 
-vector<mensaje> Servidor::getMensajesDeRespuestaConsulta(vector<Registro> registros) {
+vector<mensaje> Servidor::getMensajesDeRespuestaConsulta(const vector<Registro>& registros) {
 	mensaje respuesta;
 	Protocolo protocolo;
 	vector<mensaje> mensajes;
@@ -159,11 +159,12 @@ vector<mensaje> Servidor::getMensajesDeRespuestaConsulta(vector<Registro> regist
 	mensajes.push_back(respuesta);
 
 	/* Mensajes de respuesta */
-	for (vector<Registro>::iterator it = registros.begin(); it != registros.end(); it++) {
+	for (vector<Registro>::const_iterator it = registros.begin(); it != registros.end(); it++) {
 		respuesta = (*it).crearMensajeAsociado();
 		respuesta.ttl = ttl--;
 		respuesta.mtype = RESPUESTA;
 		respuesta.pid = getpid();
+		strcpy(respuesta.textoRespuesta, "");
 		mensajes.push_back(respuesta);
 	}
 	return mensajes;
@@ -172,8 +173,6 @@ vector<mensaje> Servidor::getMensajesDeRespuestaConsulta(vector<Registro> regist
 void Servidor::consultarRegistros() {
 	Registro registroDeConsulta;
 	registroDeConsulta.crearDesdeMensaje(peticionRecibida);
-	cout << registroDeConsulta.getNombre() << " | " << registroDeConsulta.getDireccion() << " | " << registroDeConsulta.getTelefono() << endl;
-
 	vector<Registro> resultados = this->bd.consultar(registroDeConsulta, peticionRecibida.op);
 	this->respuestas = this->getMensajesDeRespuestaConsulta(resultados);
 }

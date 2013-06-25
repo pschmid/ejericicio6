@@ -86,9 +86,6 @@ int BaseDeDatos::modificar(const Registro& exist, const Registro& modif){
 	Registro nuevo = modif;
 	nuevo.llenarVacios(*it);
 
-	cout << modif.getNombre() << " | " << modif.getDireccion() << " | " << modif.getTelefono() << endl;
-	cout << nuevo.getNombre() << " | " << nuevo.getDireccion() << " | " << nuevo.getTelefono() << endl;
-
 	/* Modificar en cache */
 	it = this->bufferRegistros.insert(it, nuevo);
 	if ((it+1) != this->bufferRegistros.end()){

@@ -40,7 +40,7 @@ class Servidor {
 		vector<mensaje> respuestas;
 		BaseDeDatos bd;
 		map<int, Cola<mensaje>*> clientes;
-		vector<mensaje> getMensajesDeRespuestaConsulta(vector<Registro> registros);
+		vector<mensaje> getMensajesDeRespuestaConsulta(const vector<Registro>& registros);
 		vector<mensaje> responderAcaEstoy();
 		void consultarRegistros();
 		void insertarRegistro();

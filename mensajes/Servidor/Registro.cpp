@@ -24,7 +24,7 @@ void Registro::crearDesdeMensaje(mensaje m){
 	strcpy(registro.nombre, m.nombre);
 	strcpy(registro.telefono, m.telefono);
 }
-mensaje Registro :: crearMensajeAsociado(){
+mensaje Registro :: crearMensajeAsociado() const{
 	mensaje m;
 	strcpy(m.direccion,registro.direccion);
 	strcpy(m.nombre, registro.nombre);
@@ -80,7 +80,9 @@ bool Registro::compararPorNombre(const Registro& r2) const{
 
 bool Registro::compararBusqueda(const Registro& r2, int op) const{
 	bool foundNom = false, foundDir = false, foundTel = false;
+
 	if(r2.vacio()){
+		cout << "Esta vacio "<< endl;
 		return true;
 	}
 	if (!r2.getNombre().empty()){
@@ -121,5 +123,6 @@ void Registro::llenarVacios(const Registro& reg){
 		strcpy(registro.telefono, reg.getTelefono().c_str());
 	}
 }
+
 Registro::~Registro() {
 }

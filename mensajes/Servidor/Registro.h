@@ -32,7 +32,7 @@ public:
 	static int getSize();
 	void crearDesdeMensaje(mensaje m);
 	void crearDesdeRegistro(t_registro r);
-	mensaje crearMensajeAsociado();
+	mensaje crearMensajeAsociado() const;
 	t_registro getRegistroASerializar() const;
 	string getDireccion() const;
     string getNombre() const;
