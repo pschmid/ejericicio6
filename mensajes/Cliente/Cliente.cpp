@@ -22,7 +22,7 @@ Cliente::~Cliente() {
 void Cliente::iniciar() {
 
 	MemoriaCompartida<bool> memoria;
-	int estadoMemoria = memoria.crear ( (char*) "Cliente.cpp",'R' );
+	memoria.crear ( (char*) "Cliente.cpp",'R' );
 	memoria.escribir(false);
 	pid_t pid = fork ();
 

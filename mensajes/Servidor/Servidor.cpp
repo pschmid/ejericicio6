@@ -22,7 +22,7 @@ void Servidor::modificarRegistro() {
 	string resp;
 
 	/* Insertar en la base de datos */
-	Registro existReg(peticionRecibida.nombre, (char*) "", (char*) "");
+	Registro existReg(peticionRecibida.nombreCons, (char*) "", (char*) "");
 	Registro nuevoReg;
 	nuevoReg.crearDesdeMensaje(peticionRecibida);
 
