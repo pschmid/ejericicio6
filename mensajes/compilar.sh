@@ -7,5 +7,3 @@ cd Servidor
 echo "-------------------- COMPILACION DEL Cliente --------------"
 cd ../Cliente/
 ./compilar.sh
-
-
