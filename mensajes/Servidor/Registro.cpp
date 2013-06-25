@@ -82,7 +82,6 @@ bool Registro::compararBusqueda(const Registro& r2, int op) const{
 	bool foundNom = false, foundDir = false, foundTel = false;
 
 	if(r2.vacio()){
-		cout << "Esta vacio "<< endl;
 		return true;
 	}
 	if (!r2.getNombre().empty()){

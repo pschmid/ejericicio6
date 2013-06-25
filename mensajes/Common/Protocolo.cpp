@@ -158,5 +158,17 @@ mensaje Protocolo::getMensajePeticion() {
 	return peticion;
 }
 
+string Protocolo::getAyuda(){
+	stringstream ss;
+	ss << "Comandos disponibles" << endl;
+	ss << "- insertar(I) " << endl;
+	ss << "  Sintaxis: insertar/I -t <telefono> -n <nombre> -d <direccion> (orden indistinto)" << endl << endl;
+	ss << "- consultar(C)" << endl;
+	ss << "  Sintaxis: consultar/C [-o OR/AND] -n <nombre> -t <telefono> -d <direccion>" << endl << endl;
+	ss << "- salir(S)" << endl;
+	ss << "- help(H)" << endl << endl;
+	return ss.str();
+}
+
 Protocolo::~Protocolo() {
 }

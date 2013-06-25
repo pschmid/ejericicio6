@@ -33,6 +33,7 @@ public:
 	mensaje getMensajePeticion();
 	mensaje getMensajeRespuesta();
 	static int getOp(const string& op);
+	string getAyuda();
 	virtual ~Protocolo();
 private:
 	vector<string> entrada;

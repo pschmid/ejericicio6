@@ -20,28 +20,25 @@ Cliente::~Cliente() {
 }
 
 void Cliente::iniciar() {
-
 	pid_t pid = fork ();
-
 
 	if ( pid == 0 ) {
 		this->chequearFinComunicacion();
 		exit ( 0 );
 	}else{
+		cout << "Bienvenido al gestor de Base de Datos v1.0" << endl << endl;
+		cout << "Ingrese el comando deseado por favor (help para ayuda)." << endl;
+		mensaje peticion = this->leerEntrada();
 
-	cout << "Bienvenido al gestor de Base de Datos v1.0" << endl << endl;
-	cout << "Ingrese el comando deseado por favor (help para ayuda)." << endl;
-	mensaje peticion = this->leerEntrada();
-
-	while (!this->salir()) {
+		while (!this->salir()) {
 			this->enviarPeticion(peticion);
 			this->recibirRespuesta();
 			peticion = this->leerEntrada();
-	}
+		}
 
-	cout<<"fin aplicación cliente"<<endl;
-	int estado;
-	wait ( (void*) &estado );
+		cout<<"fin aplicación cliente"<<endl;
+		int estado;
+		wait ( (void*) &estado );
 	}
 }
 
@@ -54,7 +51,7 @@ bool Cliente::chequearFinComunicacion(){
 		cout << "La comunicacion con el servidor se cerró" << endl;
 		cout << "para finalizar ingrese 'salir'" << endl;
 	}
-    return true;
+	return true;
 }
 
 bool Cliente::esComandoAyuda(const string& c) {
@@ -66,13 +63,8 @@ bool Cliente::esComandoSalir(const string& c) {
 }
 
 void Cliente::imprimirAyuda() {
-	cout << "Comandos disponibles" << endl;
-	cout << "- insertar(I) " << endl;
-	cout << "  Sintaxis: insertar/I -t <telefono> -n <nombre> -d <direccion> (orden indistinto)" << endl << endl;
-	cout << "- consultar(C)" << endl;
-	cout << "  Sintaxis: consultar/C [-o OR/AND] -n <nombre> -t <telefono> -d <direccion>" << endl << endl;
-	cout << "- salir(S)" << endl;
-	cout << "- help(H)" << endl << endl;
+	Protocolo protocolo;
+	cout << protocolo.getAyuda();
 }
 
 void Cliente::setSalir(bool salir) {
@@ -122,7 +114,7 @@ void Cliente::recibirRespuesta()
 	mensaje respuesta;
 	Protocolo protocolo;
 	bool quedanMensajes = true;
-    while(quedanMensajes){
+	while(quedanMensajes){
 		this->colaRecibos->leer(RESPUESTA, &respuesta);
 		if(strlen(respuesta.textoRespuesta) > 0){
 			cout << respuesta.textoRespuesta << endl;
@@ -139,5 +131,5 @@ void Cliente::recibirRespuesta()
 
 int Cliente::enviarPeticion(mensaje peticion) {
 	this->colaEnvios->escribir(peticion);
-    return 0;
+	return 0;
 }

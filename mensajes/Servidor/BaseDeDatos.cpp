@@ -74,7 +74,7 @@ int BaseDeDatos::insertar(const Registro& r){
 	return SUCCESS;
 }
 
-int BaseDeDatos::modificar(const Registro& exist, const Registro& modif){
+int BaseDeDatos::modificar(Registro& exist, const Registro& modif){
 	if (!this->existente(exist)){
 		return ERR_NO_EXISTE;
 	}
@@ -82,6 +82,7 @@ int BaseDeDatos::modificar(const Registro& exist, const Registro& modif){
 	if (this->existente(modif) && !exist.compararPorNombre(modif)){
 		return ERR_DUPLICADO;
 	}
+	exist.llenarVacios(*it);
 
 	Registro nuevo = modif;
 	nuevo.llenarVacios(*it);

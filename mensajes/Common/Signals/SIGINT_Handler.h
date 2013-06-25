@@ -21,12 +21,14 @@ class SIGINT_Handler : public EventHandler {
 		sig_atomic_t gracefulQuit;
 		Cola<mensaje>* cola;
 		map<int, Cola<mensaje>*> *clientes;
+		bool *cerrado;
 	public:
 
-		SIGINT_Handler (Cola<mensaje>* cola,map<int, Cola<mensaje>*> *clientes) {
+		SIGINT_Handler (Cola<mensaje>* cola,map<int, Cola<mensaje>*> *clientes, bool *cerrado) {
 			this->clientes = clientes;
 			this->cola = cola;
 			this->gracefulQuit = 0;
+			this->cerrado = cerrado;
 		}
 
 		~SIGINT_Handler () {
@@ -37,7 +39,7 @@ class SIGINT_Handler : public EventHandler {
 			cout << endl << "Cerrando servidor..." << endl;
 			this->gracefulQuit = 1;
 			this->cola->destruir();
-
+			*(this->cerrado) =  true;
 			cout<<"Informando a clientes..."<<endl;
 			// Responder
 			mensaje respuesta;

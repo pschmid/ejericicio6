@@ -34,8 +34,9 @@ public:
 
 	/* Busca el registro @exist, si lo encuentra inserta en su lugar el valor de @modif.
 	 * Si no lo encuentra devuelve ERR_NO_EXISTE
-	 * Si faltan datos en @modif devuelve ERR_DATOS_FALTANTES */
-	int modificar(const Registro& exist, const Registro& modif);
+	 * Si faltan datos en @modif devuelve ERR_DATOS_FALTANTES
+	 * SI el registro @exist no tiene todos los campos, se devuelven completos. */
+	int modificar(Registro& exist, const Registro& modif);
 
 	/* Devuelve un vector de registros coincidentes con la búsqueda */
 	vector<Registro> consultar(const Registro& aBuscar, int op);

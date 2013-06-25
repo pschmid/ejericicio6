@@ -32,7 +32,7 @@ void Servidor::modificarRegistro() {
 		resp = "El registro ha sido modificado con éxito con la siguiente información nueva.";
 		resp += (!nuevoReg.getNombre().empty()) ? "\nNombre: de " + existReg.getNombre() + " a " + nuevoReg.getNombre() : "";
 		resp += (!nuevoReg.getDireccion().empty()) ? "\nDirección: de " + existReg.getDireccion() + " a " +  nuevoReg.getDireccion() : "";
-		resp += (!nuevoReg.getTelefono().empty()) ? "\nTeléfono: de " + existReg.getTelefono() + " a " +  nuevoReg.getTelefono() : "";
+		resp += (!nuevoReg.getTelefono().empty()) ? "\nTeléfono: de " + existReg.getTelefono()  + " a " +  nuevoReg.getTelefono() : "";
 		resp += "\n";
 	} else if (result == ERR_NO_EXISTE){
 		resp = "El registro a modificar no existe. ";
@@ -79,42 +79,43 @@ void Servidor::insertarRegistro() {
 
 int Servidor::procesarPeticion() {
 	int clientPid = this->peticionRecibida.pid;
-	Protocolo protocolo;
-	if (protocolo.esMensajeInsertar(peticionRecibida)) {
-		cout << "Procesando insertar registro." << endl;
-		this->insertarRegistro();
-	} else if (protocolo.esMensajeConsultar(peticionRecibida)) {
-		cout << "Procesando consultar registros." << endl;
-		this->consultarRegistros();
-	} else if (protocolo.esMensajeModificar(peticionRecibida)){
-		cout << "Procesando modificar registro." << endl;
-		this->modificarRegistro();
-	} else if (protocolo.esMensajeAcaEstoy(peticionRecibida)){
-		//nuevo cliente
-		Cola<mensaje> *nuevoCliente;
-		int pidCliente = peticionRecibida.pid;
-		nuevoCliente = new Cola<mensaje> ((char *) COLA_CLIENTE, pidCliente);
-		clientes[pidCliente] = nuevoCliente;
-		this->respuestas = this->responderAcaEstoy();
-	}else{
-		//FIXME Responder algún error
+	if (!estaCerrado()){
+		Protocolo protocolo;
+		if (protocolo.esMensajeInsertar(peticionRecibida)) {
+			cout << "Procesando insertar registro." << endl;
+			this->insertarRegistro();
+		} else if (protocolo.esMensajeConsultar(peticionRecibida)) {
+			cout << "Procesando consultar registros." << endl;
+			this->consultarRegistros();
+		} else if (protocolo.esMensajeModificar(peticionRecibida)){
+			cout << "Procesando modificar registro." << endl;
+			this->modificarRegistro();
+		} else if (protocolo.esMensajeAcaEstoy(peticionRecibida)){
+			//nuevo cliente
+			Cola<mensaje> *nuevoCliente;
+			int pidCliente = peticionRecibida.pid;
+			nuevoCliente = new Cola<mensaje> ((char *) COLA_CLIENTE, pidCliente);
+			clientes[pidCliente] = nuevoCliente;
+			this->respuestas = this->responderAcaEstoy();
+		}else{
+			//FIXME Responder algún error
+		}
 	}
-
 	return clientPid;
 }
 
 vector<mensaje> Servidor::responderAcaEstoy(){
-		mensaje respuesta;
-		vector<mensaje> mensajes;
-		string resp;
-		int ttl = 1;
-		resp = "Aca estoy recibido.\n";
-		respuesta.mtype = RESPUESTA;
-		respuesta.ttl = ttl;
-		respuesta.pid = getpid();
-		strcpy(respuesta.textoRespuesta, resp.c_str());
-		mensajes.push_back(respuesta);
-		return mensajes;
+	mensaje respuesta;
+	vector<mensaje> mensajes;
+	string resp;
+	int ttl = 1;
+	resp = "Aca estoy recibido.\n";
+	respuesta.mtype = RESPUESTA;
+	respuesta.ttl = ttl;
+	respuesta.pid = getpid();
+	strcpy(respuesta.textoRespuesta, resp.c_str());
+	mensajes.push_back(respuesta);
+	return mensajes;
 }
 
 int Servidor::responderPeticion(int pidCliente) {
@@ -190,8 +191,17 @@ mensaje Servidor::getMensaje(int id) {
 	return a;
 }
 
+bool Servidor::estaCerrado() const {
+	return cerrado;
+}
+
+void Servidor::setCerrado(bool cerrado) {
+	this->cerrado = cerrado;
+}
+
+
 void Servidor::iniciar() {
-	SIGINT_Handler sigint_handler(this->cola,&this->clientes);
+	SIGINT_Handler sigint_handler(this->cola,&this->clientes, &this->cerrado);
 	SignalHandler::getInstance()->registrarHandler( SIGINT, &sigint_handler );
 	while (sigint_handler.getGracefulQuit() == 0) {
 		cout << "Esperando peticiones." << endl;
