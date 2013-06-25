@@ -24,17 +24,6 @@ using namespace std;
 #include "BaseDeDatos.h"
 
 class Servidor {
-	private:
-		Cola<mensaje>* cola;
-		mensaje peticionRecibida;
-		vector<mensaje> respuestas;
-		BaseDeDatos bd;
-		map<int, Cola<mensaje>*> clientes;
-		vector<mensaje> getMensajesDeRespuestaConsulta(vector<Registro> registros);
-		vector<mensaje> responderAcaEstoy();
-		void consultarRegistros();
-		void insertarRegistro();
-
 	public:
 		Servidor ( char* archivo,char letra );
 		int recibirPeticion ();
@@ -45,6 +34,17 @@ class Servidor {
 		vector<mensaje> getRespuesta ();
 		mensaje getMensaje(int);
 		virtual ~Servidor ();
+	private:
+		Cola<mensaje>* cola;
+		mensaje peticionRecibida;
+		vector<mensaje> respuestas;
+		BaseDeDatos bd;
+		map<int, Cola<mensaje>*> clientes;
+		vector<mensaje> getMensajesDeRespuestaConsulta(vector<Registro> registros);
+		vector<mensaje> responderAcaEstoy();
+		void consultarRegistros();
+		void insertarRegistro();
+		void modificarRegistro();
 };
 
 #endif /* SERVIDOR_H_ */

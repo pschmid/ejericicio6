@@ -7,7 +7,31 @@
 
 #include "Protocolo.h"
 
+void setearNombre(mensaje& m, const string& val){
+	strcpy(m.nombre, val.c_str());
+}
+
+void setearDire(mensaje& m, const string& val){
+	strcpy(m.direccion, val.c_str());
+}
+
+void setearTel(mensaje& m, const string& val){
+	strcpy(m.telefono, val.c_str());
+}
+
+void setearNombreCons(mensaje& m, const string& val){
+	strcpy(m.nombreCons, val.c_str());
+}
+
 Protocolo::Protocolo() {
+	this->params[0] = "-n";
+	this->actions[0] = setearNombre;
+	this->params[1] = "-d";
+	this->actions[1] = setearDire;
+	this->params[2] = "-t";
+	this->actions[2] = setearTel;
+	this->params[3] = "-m";
+	this->actions[3] = setearNombreCons;
 }
 
 bool Protocolo::esMensajeInsertar(mensaje m) {
@@ -20,6 +44,10 @@ bool Protocolo::esMensajeConsultar(mensaje m) {
 
 bool Protocolo::esMensajeRespuesta(mensaje m) {
 	return m.mtype == RESPUESTA;
+}
+
+bool Protocolo::esMensajeModificar(mensaje m) {
+	return m.mtype == MODIFICAR;
 }
 
 bool Protocolo::esMensajeAcaEstoy(mensaje m) {
@@ -47,7 +75,7 @@ bool Protocolo::validarEntrada(const string& ent) {
 		return false;
 	}
 	this->entrada = Util::split(ent, SEPARADOR);
-	if (!esComandoInsertar(this->entrada[0]) && !esComandoConsultar(this->entrada[0])) {
+	if (!esComandoInsertar(this->entrada[0]) && !esComandoConsultar(this->entrada[0]) && !esComandoModificar(entrada[0])) {
 		return false;
 	}
 	return true;
@@ -82,76 +110,45 @@ long Protocolo::getMType(const string& cmd) {
 	return mtype;
 }
 
-void Protocolo::parsearEntradaConsultar(mensaje & peticion) {
-	parsearEntrada(peticion);
+int Protocolo::posParametro(const string& s){
+	for (int i=0; i < CANT_PARAMS; i++){
+		if (s.compare(Protocolo::params[i]) == 0) {
+			return i;
+		}
+	}
+	return -1;
 }
 
-void Protocolo::parsearEntradaInsertar(mensaje & peticion) {
-	parsearEntrada(peticion);
+void Protocolo::completarCampo(mensaje& peticion, int pos, const string& valor){
+	this->actions[pos](peticion, valor);
 }
 
-void Protocolo::parsearEntradaModificar(mensaje & peticion) {
-}
-
-void Protocolo::parsearEntrada(mensaje & peticion) {
+void Protocolo::inicializarPeticion(mensaje& peticion){
 	peticion.mtype = this->getMType(entrada[0]);
-	peticion.mtype = this->getMType(this->entrada[0]);
 	peticion.pid = getpid();
 	memset(peticion.nombre, 0, NOMBRE_SIZE);
 	memset(peticion.direccion, 0, DIRECCION_SIZE);
 	memset(peticion.telefono, 0, TELEFONO_SIZE);
-	for (int i = 1; i < (int)entrada.size(); i++) {
-		if(entrada[i].compare("-n")==0){
-			unsigned int j=i;
-			string nombre = "";
-			while(j<entrada.size()-1){
-				if(entrada[j+1].compare("-t")==0 || entrada[j+1].compare("-d")==0){
-					break;
-				}
-				nombre+=entrada[j+1]+SEPARADOR;
-				j++;
-			}
-
-			strcpy(peticion.nombre,nombre.c_str());
-		}
-		if(entrada[i].compare("-d")==0){
-			unsigned int j=i;
-			string direccion = "";
-			while(j<entrada.size()-1){
-				if(entrada[j+1].compare("-t")==0 || entrada[j+1].compare("-n")==0){
-					break;
-				}
-				direccion+=entrada[j+1]+SEPARADOR;
-				j++;
-			}
-			strcpy(peticion.direccion,direccion.c_str());
-		}
-		if(entrada[i].compare("-t")==0){
-			unsigned int j=i;
-			string telefono = "";
-			while(j<entrada.size()-1){
-				if(entrada[j+1].compare("-n")==0 || entrada[j+1].compare("-d")==0){
-					break;
-				}
-				telefono+=entrada[j+1]+SEPARADOR;
-				j++;
-			}
-			strcpy(peticion.telefono,telefono.c_str());
-		}
-	}
+	memset(peticion.nombreCons, 0, NOMBRE_SIZE);
 }
 
 mensaje Protocolo::getMensajePeticion() {
 	mensaje peticion;
-	if (esComandoInsertar(entrada[0])){
-		cout << "Enviando petición de insertar registro." << endl;
-		parsearEntradaInsertar(peticion);
-	} else if(esComandoConsultar(entrada[0])){
-		cout << "Enviando petición de consultar registros." << endl;
-		parsearEntradaConsultar(peticion);
-	} else if (esComandoModificar(entrada[0])){
-		cout << "Enviando petición de modificar registro." << endl;
-		parsearEntradaModificar(peticion);
+	inicializarPeticion(peticion);
+	for (int i = 1; i < (int)entrada.size(); i++) {
+		int pos = posParametro(entrada[i]);
+		if(pos != -1){
+			unsigned int j = i;
+			string valor = "";
+			while(j < entrada.size() - 1){
+				if (posParametro(entrada[j+1]) != -1){
+					break;
+				}
+				valor += entrada[j+1] + SEPARADOR;
+				j++;
+			}
+			completarCampo(peticion,pos,valor);
+		}
 	}
 	return peticion;
 }

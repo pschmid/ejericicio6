@@ -18,8 +18,7 @@
 #define TELEFONO_SIZE 13
 #define RESPUESTA_SIZE 120
 
-
-typedef struct mensaje {
+typedef struct _mensaje {
 	long mtype;
 	int pid;
 	int ttl;
@@ -28,6 +27,7 @@ typedef struct mensaje {
 	char nombre[NOMBRE_SIZE];
 	char direccion[DIRECCION_SIZE];
 	char telefono[TELEFONO_SIZE];
+	char nombreCons[NOMBRE_SIZE];
 } mensaje;
 
 class Mensaje {

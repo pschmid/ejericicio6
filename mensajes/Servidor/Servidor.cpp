@@ -17,6 +17,39 @@ int Servidor::recibirPeticion() {
 	return 0;
 }
 
+void Servidor::modificarRegistro() {
+	Protocolo protocolo;
+	string resp;
+
+	/* Insertar en la base de datos */
+	Registro existReg(peticionRecibida.nombre, (char*) "", (char*) "");
+	Registro nuevoReg;
+	nuevoReg.crearDesdeMensaje(peticionRecibida);
+
+	int result = this->bd.modificar(existReg, nuevoReg);
+	if (result == SUCCESS){
+		resp = "El registro ha sido insertado con éxito con la siguiente información.";
+		resp += "\nNombre: " + nuevoReg.getNombre();
+		resp += "\nDirección: " + nuevoReg.getDireccion();
+		resp += "\nTeléfono: " + nuevoReg.getTelefono();
+		resp += "\n";
+	} else if (result == ERR_NO_EXISTE){
+		resp = "El registro a modificar no existe. ";
+	} else if (result == ERR_DUPLICADO){
+		resp = "El registro no se ha modificado con éxito pues está en conflicto con otro existente.";
+	} else if (result == ERR_CAMPO_REQUERIDO){
+		resp = "El registro no se ha modificado con éxito pues faltan datos requeridos.";
+	}
+
+	/* Generar respuesta */
+	mensaje respuesta;
+	respuesta.ttl = 1;
+	respuesta.mtype = RESPUESTA;
+	respuesta.pid = getpid();
+	strcpy(respuesta.textoRespuesta, resp.c_str());
+	this->respuestas.push_back(respuesta);
+}
+
 void Servidor::insertarRegistro() {
 	Protocolo protocolo;
 	string resp;
@@ -54,6 +87,8 @@ int Servidor::procesarPeticion() {
 	} else if (protocolo.esMensajeConsultar(peticionRecibida)) {
 		cout << "Procesando consultar registros." << endl;
 		this->consultarRegistros();
+	} else if (protocolo.esMensajeModificar(peticionRecibida)){
+		this->modificarRegistro();
 	} else if (protocolo.esMensajeAcaEstoy(peticionRecibida)){
 		//nuevo cliente
 		Cola<mensaje> *nuevoCliente;

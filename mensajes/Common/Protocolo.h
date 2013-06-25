@@ -17,6 +17,8 @@
 #include <map>
 #include <algorithm>
 
+#define CANT_PARAMS 4
+
 using namespace std;
 
 class Protocolo {
@@ -27,21 +29,23 @@ public:
 	bool esMensajeAcaEstoy(mensaje m);
 	bool esMensajeConsultar(mensaje m);
 	bool esMensajeRespuesta(mensaje m);
+	bool esMensajeModificar(mensaje m);
 	mensaje getMensajePeticion();
 	mensaje getMensajeRespuesta();
 	virtual ~Protocolo();
 private:
 	vector<string> entrada;
-    void parsearEntrada(mensaje & peticion);
-    void parsearEntradaInsertar(mensaje & peticion);
-    void parsearEntradaConsultar(mensaje & peticion);
-    void parsearEntradaModificar(mensaje & peticion);
-	long getMType(const string& cmd);
+	string params[CANT_PARAMS];
+	void (*actions[CANT_PARAMS])(mensaje&, const string& val);
+ 	long getMType(const string& cmd);
 	int getOp(const string& op);
+	void inicializarPeticion(mensaje& peticion);
 	bool esComandoInsertar(const string& c);
 	bool esComandoConsultar(const string& c);
 	bool esComandoBorrar(const string& c);
 	bool esComandoModificar(const string& c);
+	int posParametro(const string& s);
+	void completarCampo(mensaje& peticion, int pos, const string& valor);
 };
 
 #endif /* PROTOCOLO_H_ */

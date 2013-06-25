@@ -54,11 +54,6 @@ void Cliente::iniciar() {
 	}
 }
 
-
-bool Cliente::esComandoSalir(const string& c) {
-	return c.compare("salir") == 0 || c.compare("S") == 0;
-}
-
 bool Cliente::chequearFinComunicacion(){
 
 	mensaje respuesta;
@@ -75,12 +70,16 @@ bool Cliente::esComandoAyuda(const string& c) {
 	return c.compare("help") == 0 || c.compare("H") == 0;
 }
 
+bool Cliente::esComandoSalir(const string& c) {
+	return c.compare("salir") == 0 || c.compare("S") == 0;
+}
+
 void Cliente::imprimirAyuda() {
 	cout << "Comandos disponibles" << endl;
 	cout << "- insertar(I) " << endl;
-	cout << "	Sintaxis: insertar/I -t <telefono> -n <nombre> -d <direccion> (orden indistinto)" << endl << endl;
+	cout << "  Sintaxis: insertar/I -t <telefono> -n <nombre> -d <direccion> (orden indistinto)" << endl << endl;
 	cout << "- consultar(C)" << endl;
-	cout << "	Sintaxis: consultar/C -n <nombre>" << endl << endl;
+	cout << "  Sintaxis: consultar/C [-o OR/AND] -n <nombre> -t <telefono> -d <direccion>" << endl << endl;
 	cout << "- salir(S)" << endl;
 	cout << "- help(H)" << endl << endl;
 }
