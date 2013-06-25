@@ -160,11 +160,17 @@ mensaje Protocolo::getMensajePeticion() {
 
 string Protocolo::getAyuda(){
 	stringstream ss;
-	ss << "Comandos disponibles" << endl;
+	ss << endl << "Comandos disponibles" << endl << endl;
 	ss << "- insertar(I) " << endl;
-	ss << "  Sintaxis: insertar/I -t <telefono> -n <nombre> -d <direccion> (orden indistinto)" << endl << endl;
+	ss << "  Sintaxis: insertar -t <telefono> -n <nombre> -d <direccion>" << endl ;
+	ss << "  El orden es indistinto. Parámetros obligatorios: -n." << endl << endl;
+	ss << "- modificar(M)" << endl;
+	ss << "  Sintaxis: modificar -m <nombre_a_modif> -n <nuevo_nombre> -t <nuevo_telefono> -d <nueva_direccion>" << endl;
+	ss << "  El orden es indistinto. Parámetros obligatorios: -n y -m." << endl << endl;
 	ss << "- consultar(C)" << endl;
-	ss << "  Sintaxis: consultar/C [-o OR/AND] -n <nombre> -t <telefono> -d <direccion>" << endl << endl;
+	ss << "  Sintaxis: consultar [-o OR/AND] [-n <nombre>] [-t <telefono>] [-d <direccion>]" << endl << endl;
+	ss << "  El orden es indistinto. Parámetros obligatorios: no hay. El consultar sin parámetros devuelve todos los registros." << endl;
+	ss << "  El parámetro -o sirve para hacer un 'and' o un 'or' lógico entre las condiciones ingresadas. Por defecto es OR." << endl << endl;
 	ss << "- salir(S)" << endl;
 	ss << "- help(H)" << endl << endl;
 	return ss.str();

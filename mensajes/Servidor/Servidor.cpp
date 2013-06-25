@@ -151,7 +151,7 @@ vector<mensaje> Servidor::getMensajesDeRespuestaConsulta(const vector<Registro>&
 		resp += Util::itoa(registros.size());
 		resp += ") resultados:\n";
 	} else {
-		resp = "Su consulta no arrojó ningún resultado.\n";
+		resp = "\nSu consulta no arrojó ningún resultado.\n";
 	}
 	respuesta.mtype = RESPUESTA;
 	respuesta.ttl = ttl--;
