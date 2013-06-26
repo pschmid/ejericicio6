@@ -6,6 +6,7 @@
 #include "../Mensaje.h"
 #include <signal.h>
 #include <assert.h>
+#include <stdlib.h>
 #include <sys/wait.h>
 #include <string.h>
 #include <map>
@@ -16,14 +17,13 @@ using namespace std;
 #include "../Cola.h"
 
 class SIGINT_Handler : public EventHandler {
-
 	private:
 		sig_atomic_t gracefulQuit;
 		Cola<mensaje>* cola;
 		map<int, Cola<mensaje>*> *clientes;
 		bool *cerrado;
-	public:
 
+	public:
 		SIGINT_Handler (Cola<mensaje>* cola,map<int, Cola<mensaje>*> *clientes, bool *cerrado) {
 			this->clientes = clientes;
 			this->cola = cola;
@@ -47,7 +47,8 @@ class SIGINT_Handler : public EventHandler {
 			strcpy(respuesta.textoRespuesta, "La comunicacion con el servidor se cerró. Para finalizar ingrese 'salir' o 'S'.");
 			respuesta.ttl = 1;
 			for (map<int, Cola<mensaje> *>::iterator ii = clientes->begin() ;ii!= clientes->end(); ii++) {
-				(*ii).second->escribir(respuesta);
+				ii->second->escribir(respuesta);
+				kill(ii->first, SIGINT);
 			}
 			return 0;
 		}

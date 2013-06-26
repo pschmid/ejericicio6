@@ -30,14 +30,4 @@ typedef struct _mensaje {
 	char nombreCons[NOMBRE_SIZE];
 } mensaje;
 
-class Mensaje {
-private:
-	mensaje msj;
-public:
-	Mensaje();
-	mensaje& getMensaje(){return this->msj;}
-	void setMensaje(mensaje msj){this->msj=msj;}
-	~Mensaje();
-};
-
 #endif /* MENSAJES_H_ */

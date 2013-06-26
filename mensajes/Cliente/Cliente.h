@@ -14,6 +14,7 @@
 #include "../Common/Util.h"
 #include "../Common/Constants.h"
 #include "../Common/Signals/SignalHandler.h"
+#include "../Common/Signals/SIGINT_Handler_Cliente.h"
 
 using namespace std;
 
@@ -21,7 +22,9 @@ class Cliente {
 private:
 	Cola<mensaje>* colaEnvios;
 	Cola<mensaje>* colaRecibos;
+	SIGINT_Handler_Cliente sigint_handler;
 	bool _salir;
+	bool _servidorCerrado;
 	void imprimirAyuda();
 	bool esComandoAyuda(const string& c);
 	bool esComandoSalir(const string& c);
@@ -29,12 +32,16 @@ private:
 	mensaje leerEntrada();
     void recibirRespuesta();
     bool chequearFinComunicacion();
+	void registrarCierreServidor();
+	void enviarMensajeAnuncio();
+	void informarCierre();
+	void setServidorCerrado(bool cerrado);
+	bool servidorCerrado();
+	void setSalir(bool salir);
+	bool salir();
 public:
 	Cliente(char* archivo, char letra);
 	void iniciar();
-	void informarCierre();
-	void setSalir(bool salir);
-	bool salir();
 	virtual ~Cliente();
 };
 

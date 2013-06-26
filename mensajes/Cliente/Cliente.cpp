@@ -3,14 +3,8 @@
 Cliente::Cliente(char* archivo, char letra) {
 	this->colaEnvios = new Cola<mensaje> (archivo, letra);
 	this->colaRecibos = new Cola<mensaje> ((char *) COLA_CLIENTE, getpid());
-	this->_salir = false;
-	mensaje acaEstoy;
-	acaEstoy.mtype = ACA_ESTOY;
-	acaEstoy.pid = getpid();
-	acaEstoy.ttl =1;
-	this->colaEnvios->escribir(acaEstoy);
-	this->recibirRespuesta();
-
+	this->setSalir(false);
+	this->setServidorCerrado(false);
 }
 
 Cliente::~Cliente() {
@@ -19,13 +13,28 @@ Cliente::~Cliente() {
 	delete this->colaRecibos;
 }
 
-void Cliente::iniciar() {
-	pid_t pid = fork ();
+void Cliente::enviarMensajeAnuncio(){
+	mensaje acaEstoy;
+	acaEstoy.mtype = ACA_ESTOY;
+	acaEstoy.pid = getpid();
+	acaEstoy.ttl =1;
+	this->enviarPeticion(acaEstoy);
+	this->recibirRespuesta();
+}
 
+void Cliente::registrarCierreServidor(){
+	SignalHandler::getInstance()->registrarHandler( SIGINT, &sigint_handler );
+}
+
+void Cliente::iniciar() {
+	this->enviarMensajeAnuncio();
+	pid_t pid = fork ();
 	if ( pid == 0 ) {
 		this->chequearFinComunicacion();
 		exit ( 0 );
 	}else{
+		this->registrarCierreServidor();
+
 		cout << "Bienvenido al gestor de Base de Datos v1.0" << endl << endl;
 		cout << "Ingrese el comando deseado por favor (help para ayuda)." << endl;
 		mensaje peticion = this->leerEntrada();
@@ -36,20 +45,19 @@ void Cliente::iniciar() {
 			peticion = this->leerEntrada();
 		}
 
-		cout<<"fin aplicación cliente"<<endl;
+		cout<<"Fin aplicación cliente."<<endl;
 		int estado;
 		wait ( (void*) &estado );
 	}
 }
 
 bool Cliente::chequearFinComunicacion(){
-
 	mensaje respuesta;
 	Protocolo protocolo;
 	this->colaRecibos->leer(EXIT, &respuesta);
 	if(respuesta.pid != getppid()){
-		cout << "La comunicacion con el servidor se cerró" << endl;
-		cout << "para finalizar ingrese 'salir'" << endl;
+		cout << "La comunicacion con el servidor se cerró. Ingrese cualquier tecla para salir." << endl;
+		cin.get();
 	}
 	return true;
 }
@@ -67,6 +75,14 @@ void Cliente::imprimirAyuda() {
 	cout << protocolo.getAyuda();
 }
 
+void Cliente::setServidorCerrado(bool cerrado){
+	this->sigint_handler.setServidorCerrado(cerrado);
+}
+
+bool Cliente::servidorCerrado(){
+	return this->sigint_handler.servidorCerrado();
+}
+
 void Cliente::setSalir(bool salir) {
 	this->_salir = salir;
 }
@@ -75,42 +91,39 @@ bool Cliente::salir() {
 	return this->_salir;
 }
 
-mensaje Cliente::leerEntrada() {
+void Cliente::informarCierre(){
+	mensaje respuesta;
+	respuesta.mtype = EXIT;
+	respuesta.ttl = 1;
+	respuesta.pid = getpid();
+	this->colaRecibos->escribir(respuesta);
+}
 
+mensaje Cliente::leerEntrada() {
 	Protocolo protocolo;
 	string entrada = "";
-	bool val, sal;
 	do {
 		cout << "> ";
 		getline(cin, entrada);
-
+		if(servidorCerrado()){
+			break;
+		}
 		if (esComandoAyuda(entrada)) {
 			this->imprimirAyuda();
 		}
-		val = protocolo.validarEntrada(entrada);
-		sal = esComandoSalir(entrada);
+	} while (!protocolo.validarEntrada(entrada) && !esComandoSalir(entrada));
 
-	} while (!val && !sal);
-
-	if (esComandoSalir(entrada) || this->_salir==true) {
-		if(esComandoSalir(entrada)){
-			// Responder mensaje de cierre dummy
-			mensaje respuesta;
-			respuesta.mtype = EXIT;
-			respuesta.ttl = 1;
-			respuesta.pid = getpid();
-			this->colaRecibos->escribir(respuesta);
-		}
-
+	if(esComandoSalir(entrada) || servidorCerrado()){
+		this->informarCierre();
 		this->setSalir(true);
 		mensaje nulo;
 		return nulo;
 	}
+
 	return protocolo.getMensajePeticion();
 }
 
-void Cliente::recibirRespuesta()
-{
+void Cliente::recibirRespuesta() {
 	mensaje respuesta;
 	Protocolo protocolo;
 	bool quedanMensajes = true;
