@@ -109,7 +109,7 @@ vector<mensaje> Servidor::responderAcaEstoy(){
 	vector<mensaje> mensajes;
 	string resp;
 	int ttl = 1;
-	resp = "Aca estoy recibido.\n";
+	resp = "Conectado con el servidor.";
 	respuesta.mtype = RESPUESTA;
 	respuesta.ttl = ttl;
 	respuesta.pid = getpid();
