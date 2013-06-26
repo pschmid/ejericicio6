@@ -17,6 +17,7 @@ template <class T> class Cola {
 		int escribir ( T dato );
 		int leer ( int tipo,T* buffer );
 		int destruir ();
+		static bool existe(const char* archivo,int letra);
 };
 
 template <class T> Cola<T> :: Cola ( const char* archivo,int letra ) {
@@ -28,6 +29,18 @@ template <class T> Cola<T> :: Cola ( const char* archivo,int letra ) {
 	if ( this->id == -1 )
 		perror ( "Error en msgget" );
 }
+
+template <class T> bool Cola<T> :: existe( const char* archivo, int letra ) {
+	int clave = ftok ( archivo,letra );
+	int id = msgget ( clave, 0777 | IPC_CREAT | IPC_EXCL );
+	bool result = false;
+	if ( id == -1 ){
+		result = true;
+	}
+	msgctl (id,IPC_RMID,NULL );
+	return result;
+}
+
 
 template <class T> Cola<T> :: ~Cola () {
 }

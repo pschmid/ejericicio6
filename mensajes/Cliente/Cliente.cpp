@@ -1,10 +1,17 @@
 #include "Cliente.h"
 
 Cliente::Cliente(char* archivo, char letra) {
+	bool hayServidor = Cola<mensaje>::existe(archivo, letra);
 	this->colaEnvios = new Cola<mensaje> (archivo, letra);
 	this->colaRecibos = new Cola<mensaje> ((char *) COLA_CLIENTE, getpid());
-	this->setSalir(false);
-	this->setServidorCerrado(false);
+	if(hayServidor){
+		this->setServidorCerrado(false);
+		this->setSalir(false);
+	} else {
+		this->setServidorCerrado(true);
+		this->setSalir(true);
+		this->colaEnvios->destruir();
+	}
 }
 
 Cliente::~Cliente() {
@@ -27,28 +34,31 @@ void Cliente::registrarCierre(){
 }
 
 void Cliente::iniciar() {
-	this->registrarCierre();
-	pid_t pid = fork ();
-	if ( pid == 0 ) {
-		this->chequearFinComunicacion();
-		exit ( 0 );
-	}else{
-		this->enviarMensajeAnuncio();
+	if (!servidorCerrado()){
+		this->registrarCierre();
+		pid_t pid = fork ();
+		if ( pid == 0 ) {
+			this->chequearFinComunicacion();
+			exit ( 0 );
+		} else {
+			this->enviarMensajeAnuncio();
 
-		cout << "Bienvenido al gestor de Base de Datos v1.0" << endl << endl;
-		cout << "Ingrese el comando deseado por favor (help para ayuda)." << endl;
-		mensaje peticion = this->leerEntrada();
+			cout << "Bienvenido al gestor de Base de Datos v1.0" << endl << endl;
+			cout << "Ingrese el comando deseado por favor (help para ayuda)." << endl;
+			mensaje peticion = this->leerEntrada();
 
-		while (!this->salir()) {
-			this->enviarPeticion(peticion);
-			this->recibirRespuesta();
-			peticion = this->leerEntrada();
+			while (!this->salir()) {
+				this->enviarPeticion(peticion);
+				this->recibirRespuesta();
+				peticion = this->leerEntrada();
+			}
+			int estado;
+			wait ( (void*) &estado );
 		}
-
-		cout<<"Fin aplicación cliente."<<endl;
-		int estado;
-		wait ( (void*) &estado );
+	} else {
+		cout << "No hay ningún servidor corriendo, por favor intente luego." << endl;
 	}
+	cout<<"Fin aplicación cliente."<<endl;
 }
 
 bool Cliente::chequearFinComunicacion(){
