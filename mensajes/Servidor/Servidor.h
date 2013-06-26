@@ -1,19 +1,16 @@
 #ifndef SERVIDOR_H_
 #define SERVIDOR_H_
 
-#include <string.h>
-#include <iostream>
 #include <unistd.h>
+#include <string.h>
 #include <stdlib.h>
 #include <sys/wait.h>
-#include <vector>
-#include <string>
-#include <list>
+#include <iostream>
 #include <fstream>
+#include <vector>
 #include <map>
+#include <string>
 #include <unistd.h>
-using namespace std;
-
 #include "../Common/Mensaje.h"
 #include "../Common/Cola.h"
 #include "../Common/Util.h"
@@ -22,6 +19,8 @@ using namespace std;
 #include "../Common/Signals/SIGINT_Handler.h"
 #include "../Common/Signals/SignalHandler.h"
 #include "BaseDeDatos.h"
+
+using namespace std;
 
 class Servidor {
 public:

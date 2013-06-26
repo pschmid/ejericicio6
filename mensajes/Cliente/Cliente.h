@@ -35,6 +35,7 @@ private:
 	void registrarCierreServidor();
 	void enviarMensajeAnuncio();
 	void informarCierre();
+	void registrarCierre();
 	void setServidorCerrado(bool cerrado);
 	bool servidorCerrado();
 	void setSalir(bool salir);

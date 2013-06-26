@@ -22,18 +22,18 @@ void Cliente::enviarMensajeAnuncio(){
 	this->recibirRespuesta();
 }
 
-void Cliente::registrarCierreServidor(){
+void Cliente::registrarCierre(){
 	SignalHandler::getInstance()->registrarHandler( SIGINT, &sigint_handler );
 }
 
 void Cliente::iniciar() {
-	this->enviarMensajeAnuncio();
+	this->registrarCierre();
 	pid_t pid = fork ();
 	if ( pid == 0 ) {
 		this->chequearFinComunicacion();
 		exit ( 0 );
 	}else{
-		this->registrarCierreServidor();
+		this->enviarMensajeAnuncio();
 
 		cout << "Bienvenido al gestor de Base de Datos v1.0" << endl << endl;
 		cout << "Ingrese el comando deseado por favor (help para ayuda)." << endl;
